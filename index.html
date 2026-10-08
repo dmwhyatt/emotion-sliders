@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seven Musical Variables</title>
+  <meta name="description" content="Interactive version of Bresin &amp; Friberg (2011): render emotion in music with seven faders.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23101419'/%3E%3Cg fill='%235ab4ff'%3E%3Crect x='5' y='14' width='3' height='13' rx='1.5'/%3E%3Crect x='11' y='8' width='3' height='19' rx='1.5'/%3E%3Crect x='17' y='17' width='3' height='10' rx='1.5'/%3E%3Crect x='23' y='5' width='3' height='22' rx='1.5'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="boot">
+  <div class="boot-card">
+    <h1>Seven musical variables</h1>
+    <p class="lead">Make one piece of music sound <b>happy</b>, <b>sad</b>, <b>scary</b>, <b>peaceful</b> or <b>neutral</b> using seven faders — tempo, sound level, articulation, phrasing, register, timbre and attack speed.</p>
+    <p class="muted">An interactive version of the production experiment in Bresin &amp; Friberg (2011), <i>Cortex</i> 47, 1068–1081.</p>
+    <button id="startBtn" class="primary big">Start</button>
+    <div id="bootProgress" hidden><div><i id="bootFill"></i></div><span id="bootText">Loading sounds…</span></div>
+    <p id="bootError" class="error" hidden></p>
+    <p class="muted small">Plays sound — turn the volume up a little. Best in Chrome or Edge.</p>
+  </div>
+</div>
+
+<div id="app" hidden data-mode="explore">
+  <header class="topbar">
+    <div class="brand"><b>Seven musical variables</b><span>emotion rendering in music · Bresin &amp; Friberg (2011)</span></div>
+    <nav class="tabs" role="tablist" aria-label="Mode">
+      <button id="tabExplore" class="tab active" role="tab" aria-selected="true">Explore</button>
+      <button id="tabExperiment" class="tab" role="tab" aria-selected="false">Experiment</button>
+    </nav>
+    <div class="topbar-right"><button id="themeBtn" class="ghost" title="Switch light / dark" aria-label="Switch light or dark theme">◐</button></div>
+  </header>
+
+  <!-- Experiment: set-up -->
+  <section id="screenSetup" class="screen" hidden>
+    <div class="card">
+      <h2>Run the experiment</h2>
+      <p>Twenty short pieces — four scores × five emotions, in random order. For each one you get an emotion
+         (e.g. <b class="e-happy">happy</b>) and you move the seven faders until the music sounds like it. The faders stay where you
+         leave them when you move to the next piece, as in the original study. Only your final fader positions are scored.</p>
+      <div class="form-row">
+        <label for="pid">Participant name / ID</label>
+        <input id="pid" type="text" autocomplete="off" placeholder="e.g. Sam" maxlength="40">
+      </div>
+      <label class="check"><input id="practiceChk" type="checkbox" checked> Start with a practice piece (not recorded)</label><br>
+      <label class="check" style="margin-top:8px"><input id="blindChk" type="checkbox" checked> Hide the numeric readouts during the task <span class="muted">(the original participants only had physical sliders; numbers would also reveal which score is playing)</span></label>
+      <div class="row-actions"><button id="beginBtn" class="primary big">Begin</button></div>
+    </div>
+    <div class="card" id="storedCard" hidden>
+      <h3>Sessions on this computer <span id="storedCount" class="muted"></span></h3>
+      <ul id="storedList" class="stored"></ul>
+      <div class="row-actions">
+        <button id="poolBtn">Show pooled results</button>
+        <button id="csvAllBtn">Download all (CSV)</button>
+        <button id="clearBtn" class="danger">Delete all</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experiment: results -->
+  <section id="screenResults" class="screen wide" hidden>
+    <div class="card">
+      <div class="results-head">
+        <div>
+          <h2 id="resultsTitle">Results</h2>
+          <p class="muted" id="resultsSub"></p>
+        </div>
+        <div class="seg" role="group" aria-label="Which data">
+          <button id="resMine" class="active">This participant</button>
+          <button id="resPool">Everyone on this computer</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i class="lg-band"></i> paper: mean ± 95 % CI (17 musicians, Table 1)</span>
+        <span><i class="lg-ring"></i> each of the four scores</span>
+        <span><i class="lg-dot"></i> mean over scores</span>
+      </div>
+      <div id="resultsBody"></div>
+      <div class="row-actions">
+        <button id="csvBtn" class="primary">Download CSV</button>
+        <button id="jsonBtn">Download JSON (with slider movements)</button>
+        <button id="againBtn">New participant</button>
+        <button id="backBtn" class="ghost">Back to Explore</button>
+      </div>
+    </div>
+  </section>
+
+  <main id="stage">
+    <div id="banner">
+      <div id="exploreBanner" class="banner-row">
+        <span class="label">Score</span>
+        <div id="scorePicker" class="seg" role="group" aria-label="Choose a score"></div>
+        <span id="scoreNote" class="muted"></span>
+      </div>
+      <div id="trialBanner" class="banner-row" hidden>
+        <div class="trial-meta"><span id="trialCount"></span><div class="trial-bar"><i id="trialFill"></i></div></div>
+        <div id="trialPrompt" class="trial-prompt"></div>
+        <button id="nextBtn" class="primary big">Next piece →</button>
+      </div>
+    </div>
+
+    <div id="transport">
+      <button id="playBtn" class="primary" title="Play / pause (space)">▶ Play</button>
+      <button id="stopBtn" title="Stop">■ Stop</button>
+      <label class="check loop"><input id="loopChk" type="checkbox" checked> Loop</label>
+      <div id="progress">
+        <div id="progressBar"><i id="progressFill"></i><div id="progressTicks"></div></div>
+        <span id="barLabel">bar – / –</span>
+      </div>
+      <label class="vol" title="Overall volume (not one of the seven variables)">Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="0.7"></label>
+      <div class="explore-only">
+        <button id="resetBtn" title="Put every fader back to its starting position">Reset faders</button>
+        <button id="wavBtn" title="Render the current setting to a WAV file">Save WAV</button>
+      </div>
+    </div>
+
+    <div id="mixer" aria-label="The seven faders"></div>
+
+    <div id="infobar" aria-live="polite">
+      <b id="infoTitle">Seven faders, seven musical variables</b>
+      <span id="infoText">Drag a fader — the music changes as you move it. Hover over a fader to read what it does. Double-click a fader to reset it.</span>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

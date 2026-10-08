@@ -1,0 +1,709 @@
+{
+ "font": "MuseScore_General_HQ v0.2",
+ "instruments": {
+  "piano": [
+   {
+    "file": "piano_00.flac",
+    "lo": 0,
+    "hi": 24,
+    "root": 23,
+    "tune": -5,
+    "gainDb": -2.28,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_01.flac",
+    "lo": 25,
+    "hi": 27,
+    "root": 27,
+    "tune": -5,
+    "gainDb": -8.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_02.flac",
+    "lo": 28,
+    "hi": 30,
+    "root": 29,
+    "tune": -5,
+    "gainDb": -8.58,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_03.flac",
+    "lo": 31,
+    "hi": 32,
+    "root": 31,
+    "tune": -5,
+    "gainDb": -6.58,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_04.flac",
+    "lo": 33,
+    "hi": 34,
+    "root": 33,
+    "tune": -5,
+    "gainDb": -3.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_05.flac",
+    "lo": 35,
+    "hi": 36,
+    "root": 35,
+    "tune": -5,
+    "gainDb": -1.58,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_06.flac",
+    "lo": 37,
+    "hi": 38,
+    "root": 38,
+    "tune": -5,
+    "gainDb": -8.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_07.flac",
+    "lo": 39,
+    "hi": 41,
+    "root": 40,
+    "tune": -5,
+    "gainDb": -6.58,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_08.flac",
+    "lo": 42,
+    "hi": 43,
+    "root": 43,
+    "tune": -5,
+    "gainDb": -9.58,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_09.flac",
+    "lo": 44,
+    "hi": 45,
+    "root": 45,
+    "tune": -5,
+    "gainDb": -9.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_10.flac",
+    "lo": 46,
+    "hi": 47,
+    "root": 47,
+    "tune": -5,
+    "gainDb": -11.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_11.flac",
+    "lo": 48,
+    "hi": 49,
+    "root": 48,
+    "tune": -5,
+    "gainDb": -9.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_12.flac",
+    "lo": 50,
+    "hi": 51,
+    "root": 50,
+    "tune": -5,
+    "gainDb": -12.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_13.flac",
+    "lo": 52,
+    "hi": 53,
+    "root": 52,
+    "tune": -5,
+    "gainDb": -8.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_14.flac",
+    "lo": 54,
+    "hi": 55,
+    "root": 55,
+    "tune": -5,
+    "gainDb": -12.58,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_15.flac",
+    "lo": 56,
+    "hi": 58,
+    "root": 57,
+    "tune": -5,
+    "gainDb": -8.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_16.flac",
+    "lo": 59,
+    "hi": 59,
+    "root": 59,
+    "tune": -5,
+    "gainDb": -12.58,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_17.flac",
+    "lo": 60,
+    "hi": 61,
+    "root": 60,
+    "tune": -5,
+    "gainDb": -7.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_18.flac",
+    "lo": 62,
+    "hi": 63,
+    "root": 62,
+    "tune": -5,
+    "gainDb": -4.38,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_19.flac",
+    "lo": 64,
+    "hi": 65,
+    "root": 64,
+    "tune": -5,
+    "gainDb": -10.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_20.flac",
+    "lo": 66,
+    "hi": 67,
+    "root": 67,
+    "tune": -5,
+    "gainDb": -9.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_21.flac",
+    "lo": 68,
+    "hi": 69,
+    "root": 69,
+    "tune": -5,
+    "gainDb": -11.08,
+    "loop": null,
+    "seconds": 6.0
+   },
+   {
+    "file": "piano_22.flac",
+    "lo": 70,
+    "hi": 71,
+    "root": 71,
+    "tune": -5,
+    "gainDb": -6.58,
+    "loop": null,
+    "seconds": 5.504
+   },
+   {
+    "file": "piano_23.flac",
+    "lo": 72,
+    "hi": 74,
+    "root": 72,
+    "tune": -5,
+    "gainDb": -5.08,
+    "loop": null,
+    "seconds": 4.322
+   },
+   {
+    "file": "piano_24.flac",
+    "lo": 75,
+    "hi": 77,
+    "root": 76,
+    "tune": -5,
+    "gainDb": -7.08,
+    "loop": null,
+    "seconds": 5.399
+   },
+   {
+    "file": "piano_25.flac",
+    "lo": 78,
+    "hi": 79,
+    "root": 79,
+    "tune": -5,
+    "gainDb": -9.58,
+    "loop": null,
+    "seconds": 5.737
+   },
+   {
+    "file": "piano_26.flac",
+    "lo": 80,
+    "hi": 81,
+    "root": 80,
+    "tune": -5,
+    "gainDb": -13.88,
+    "loop": null,
+    "seconds": 3.141
+   },
+   {
+    "file": "piano_27.flac",
+    "lo": 82,
+    "hi": 83,
+    "root": 83,
+    "tune": -5,
+    "gainDb": -11.08,
+    "loop": null,
+    "seconds": 4.532
+   },
+   {
+    "file": "piano_28.flac",
+    "lo": 84,
+    "hi": 86,
+    "root": 85,
+    "tune": -5,
+    "gainDb": -10.08,
+    "loop": null,
+    "seconds": 3.881
+   },
+   {
+    "file": "piano_29.flac",
+    "lo": 87,
+    "hi": 87,
+    "root": 87,
+    "tune": -5,
+    "gainDb": -10.08,
+    "loop": null,
+    "seconds": 3.68
+   },
+   {
+    "file": "piano_30.flac",
+    "lo": 88,
+    "hi": 88,
+    "root": 87,
+    "tune": -5,
+    "gainDb": -3.08,
+    "loop": null,
+    "seconds": 3.68
+   },
+   {
+    "file": "piano_31.flac",
+    "lo": 89,
+    "hi": 90,
+    "root": 89,
+    "tune": -5,
+    "gainDb": -0.58,
+    "loop": null,
+    "seconds": 4.035
+   },
+   {
+    "file": "piano_32.flac",
+    "lo": 91,
+    "hi": 92,
+    "root": 91,
+    "tune": -5,
+    "gainDb": -4.08,
+    "loop": null,
+    "seconds": 2.856
+   },
+   {
+    "file": "piano_33.flac",
+    "lo": 93,
+    "hi": 94,
+    "root": 93,
+    "tune": -5,
+    "gainDb": 1.12,
+    "loop": null,
+    "seconds": 2.656
+   },
+   {
+    "file": "piano_34.flac",
+    "lo": 95,
+    "hi": 96,
+    "root": 95,
+    "tune": -5,
+    "gainDb": -4.58,
+    "loop": null,
+    "seconds": 2.57
+   },
+   {
+    "file": "piano_35.flac",
+    "lo": 97,
+    "hi": 98,
+    "root": 97,
+    "tune": -5,
+    "gainDb": -5.58,
+    "loop": null,
+    "seconds": 2.063
+   },
+   {
+    "file": "piano_36.flac",
+    "lo": 99,
+    "hi": 100,
+    "root": 99,
+    "tune": -5,
+    "gainDb": -3.08,
+    "loop": null,
+    "seconds": 2.47
+   },
+   {
+    "file": "piano_37.flac",
+    "lo": 101,
+    "hi": 102,
+    "root": 101,
+    "tune": -5,
+    "gainDb": -3.58,
+    "loop": null,
+    "seconds": 1.993
+   },
+   {
+    "file": "piano_38.flac",
+    "lo": 103,
+    "hi": 104,
+    "root": 103,
+    "tune": -5,
+    "gainDb": -2.08,
+    "loop": null,
+    "seconds": 2.33
+   },
+   {
+    "file": "piano_39.flac",
+    "lo": 105,
+    "hi": 106,
+    "root": 105,
+    "tune": -5,
+    "gainDb": -3.58,
+    "loop": null,
+    "seconds": 2.332
+   },
+   {
+    "file": "piano_40.flac",
+    "lo": 107,
+    "hi": 127,
+    "root": 107,
+    "tune": -5,
+    "gainDb": -4.08,
+    "loop": null,
+    "seconds": 2.624
+   }
+  ],
+  "horn": [
+   {
+    "file": "horn_00.flac",
+    "lo": 0,
+    "hi": 40,
+    "root": 39,
+    "tune": 0,
+    "gainDb": -13.6,
+    "loop": [
+     1.42103,
+     2.90775
+    ],
+    "seconds": 2.909
+   },
+   {
+    "file": "horn_01.flac",
+    "lo": 41,
+    "hi": 46,
+    "root": 45,
+    "tune": 0,
+    "gainDb": -11.6,
+    "loop": [
+     1.21422,
+     2.99541
+    ],
+    "seconds": 2.997
+   },
+   {
+    "file": "horn_02.flac",
+    "lo": 47,
+    "hi": 52,
+    "root": 51,
+    "tune": 0,
+    "gainDb": -11.6,
+    "loop": [
+     1.30034,
+     4.22519
+    ],
+    "seconds": 4.226
+   },
+   {
+    "file": "horn_03.flac",
+    "lo": 53,
+    "hi": 58,
+    "root": 57,
+    "tune": 0,
+    "gainDb": -11.6,
+    "loop": [
+     0.69231,
+     2.49178
+    ],
+    "seconds": 2.492
+   },
+   {
+    "file": "horn_04.flac",
+    "lo": 59,
+    "hi": 64,
+    "root": 63,
+    "tune": 0,
+    "gainDb": -11.6,
+    "loop": [
+     2.10325,
+     5.02716
+    ],
+    "seconds": 5.028
+   },
+   {
+    "file": "horn_05.flac",
+    "lo": 65,
+    "hi": 70,
+    "root": 69,
+    "tune": 0,
+    "gainDb": -11.6,
+    "loop": [
+     1.15159,
+     2.63137
+    ],
+    "seconds": 2.632
+   },
+   {
+    "file": "horn_06.flac",
+    "lo": 71,
+    "hi": 127,
+    "root": 75,
+    "tune": 0,
+    "gainDb": -11.6,
+    "loop": [
+     0.71981,
+     3.09991
+    ],
+    "seconds": 3.1
+   }
+  ],
+  "flute": [
+   {
+    "file": "flute_00.flac",
+    "lo": 0,
+    "hi": 62,
+    "root": 61,
+    "tune": 0,
+    "gainDb": -16.3,
+    "loop": [
+     0.6595,
+     0.91138
+    ],
+    "seconds": 0.912
+   },
+   {
+    "file": "flute_01.flac",
+    "lo": 63,
+    "hi": 65,
+    "root": 64,
+    "tune": 11,
+    "gainDb": -16.3,
+    "loop": [
+     0.72546,
+     0.97526
+    ],
+    "seconds": 0.976
+   },
+   {
+    "file": "flute_02.flac",
+    "lo": 66,
+    "hi": 68,
+    "root": 67,
+    "tune": 0,
+    "gainDb": -16.3,
+    "loop": [
+     0.64424,
+     0.87077
+    ],
+    "seconds": 0.872
+   },
+   {
+    "file": "flute_03.flac",
+    "lo": 69,
+    "hi": 71,
+    "root": 71,
+    "tune": 2,
+    "gainDb": -16.3,
+    "loop": [
+     0.38073,
+     0.61535
+    ],
+    "seconds": 0.616
+   },
+   {
+    "file": "flute_04.flac",
+    "lo": 72,
+    "hi": 75,
+    "root": 74,
+    "tune": -10,
+    "gainDb": -16.3,
+    "loop": [
+     1.01594,
+     1.2539
+    ],
+    "seconds": 1.255
+   },
+   {
+    "file": "flute_05.flac",
+    "lo": 76,
+    "hi": 78,
+    "root": 78,
+    "tune": -11,
+    "gainDb": -16.3,
+    "loop": [
+     0.4407,
+     0.67918
+    ],
+    "seconds": 0.679
+   },
+   {
+    "file": "flute_06.flac",
+    "lo": 79,
+    "hi": 81,
+    "root": 80,
+    "tune": -11,
+    "gainDb": -16.3,
+    "loop": [
+     0.25558,
+     0.49923
+    ],
+    "seconds": 0.499
+   },
+   {
+    "file": "flute_07.flac",
+    "lo": 82,
+    "hi": 84,
+    "root": 84,
+    "tune": -21,
+    "gainDb": -16.3,
+    "loop": [
+     0.51086,
+     0.73726
+    ],
+    "seconds": 0.738
+   },
+   {
+    "file": "flute_08.flac",
+    "lo": 85,
+    "hi": 127,
+    "root": 90,
+    "tune": -32,
+    "gainDb": -16.3,
+    "loop": [
+     0.42556,
+     0.67918
+    ],
+    "seconds": 0.679
+   }
+  ],
+  "trumpet": [
+   {
+    "file": "trumpet_00.flac",
+    "lo": 0,
+    "hi": 66,
+    "root": 64,
+    "tune": 0,
+    "gainDb": -11.32,
+    "loop": [
+     0.16293,
+     0.41488
+    ],
+    "seconds": 0.416
+   },
+   {
+    "file": "trumpet_01.flac",
+    "lo": 67,
+    "hi": 71,
+    "root": 67,
+    "tune": 0,
+    "gainDb": -11.32,
+    "loop": [
+     0.182,
+     0.38082
+    ],
+    "seconds": 0.381
+   },
+   {
+    "file": "trumpet_02.flac",
+    "lo": 72,
+    "hi": 75,
+    "root": 72,
+    "tune": 0,
+    "gainDb": -11.32,
+    "loop": [
+     0.32358,
+     0.52612
+    ],
+    "seconds": 0.527
+   },
+   {
+    "file": "trumpet_03.flac",
+    "lo": 76,
+    "hi": 83,
+    "root": 79,
+    "tune": 0,
+    "gainDb": -11.32,
+    "loop": [
+     0.24102,
+     0.45034
+    ],
+    "seconds": 0.451
+   },
+   {
+    "file": "trumpet_04.flac",
+    "lo": 84,
+    "hi": 90,
+    "root": 88,
+    "tune": 0,
+    "gainDb": -11.32,
+    "loop": [
+     0.26878,
+     0.42075
+    ],
+    "seconds": 0.421
+   },
+   {
+    "file": "trumpet_05.flac",
+    "lo": 91,
+    "hi": 127,
+    "root": 96,
+    "tune": 0,
+    "gainDb": -11.32,
+    "loop": [
+     0.20971,
+     0.4288
+    ],
+    "seconds": 0.429
+   }
+  ]
+ }
+}
