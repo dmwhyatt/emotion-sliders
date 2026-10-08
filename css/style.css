@@ -194,6 +194,7 @@ input[type=text] { background: var(--bg); border: 1px solid var(--line); border-
 .lg-band { width: 26px; height: 10px; background: var(--muted); opacity: .35; border-radius: 3px; }
 .lg-ring { width: 9px; height: 9px; border: 2px solid var(--muted); border-radius: 50%; }
 .lg-dot { width: 13px; height: 13px; background: var(--muted); border-radius: 50%; }
+.lg-part { width: 9px; height: 9px; background: var(--muted); opacity: .55; border-radius: 50%; }
 .result-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px 24px; }
 .result-panel { margin: 0; background: var(--panel-2); border-radius: 10px; padding: 10px 12px 6px; }
 .result-panel figcaption { display: flex; justify-content: space-between; align-items: baseline; padding: 0 4px 2px; }

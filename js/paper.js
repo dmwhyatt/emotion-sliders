@@ -5,8 +5,11 @@
 
 export const EMOTIONS = ['neutral', 'happy', 'scary', 'peaceful', 'sad'];
 
-// Table 1: mean, standard error and 95 % confidence interval of the participants' final slider
-// settings, per emotion.  (No values were reported for phrasing: no significant effects.)
+// Table 1: mean, 95 % confidence interval lower and upper bound of the participants' final slider
+// settings, per emotion: [mean, lower, upper].  (No values were reported for phrasing: no significant
+// effects.)  Attack is in ms on the longest note of each score (Sec. 3.7).  For timbre the paper's two
+// descriptions of "which instrument does a mean correspond to" disagree (Table 1 caption: horn < 1.83,
+// trumpet > 2.17; Sec. 3.6: horn < 1.5, trumpet > 2.5), so no cut-offs are used here.
 export const TABLE1 = {
   tempo:    { unit: 'notes/s', happy: [4.984, 4.279, 5.688], scary: [4.446, 2.697, 6.196], neutral: [3.172, 2.773, 3.572], peaceful: [2.227, 1.871, 2.583], sad: [1.333, 1.112, 1.554] },
   level:    { unit: 'dB',      happy: [7.790, 0.480, 15.101], scary: [4.742, -6.005, 15.489], neutral: [-3.657, -10.032, 2.717], peaceful: [-8.508, -15.793, -1.224], sad: [-13.443, -20.546, -6.339] },
@@ -46,36 +49,38 @@ export const PARAMS = [
     // [paper] 10x slower .. 4x faster, logarithmic slider
     value: (u) => 0.1 * Math.pow(40, u),
     pos: (v) => Math.log(v / 0.1) / Math.log(40),
-    defaultValue: 1, nominalValue: 1,
+    defaultValue: 1,
     ticks: [0.1, 0.25, 0.5, 1, 2, 4].map((v) => ({ value: v, label: v === 1 ? 'original' : `×${v}` })),
     read: (v, s) => ({ main: fmt(v * s.notesPerSec, 2), unit: 'notes/s', sub: `× ${fmt(v, 2)} the original tempo` }),
     record: (v, s) => v * s.notesPerSec,
   },
   {
     id: 'level', group: 'performance', name: 'Sound level',
-    help: 'How loud the music is, in decibels relative to the nominal level (0 dB ≈ mp–mf). Louder notes are also a little brighter, as on real instruments.',
+    help: 'How loud the music is, in decibels relative to the nominal level (0 dB ≈ between mp and mf). In the paper −10 dB is pp and +10 dB is f; the fader goes further, to ±20 dB, because the paper\'s own Table 1 means reach −13 dB. Louder notes are also a little brighter, as on real instruments.',
     caption: 'loudness in dB',
     top: 'LOUD', bottom: 'SOFT', topSub: '+20 dB', bottomSub: '−20 dB',
-    // [paper] says ±10 dB, but its own Table 1 means reach −13.4 dB (CI to −20.5) and +7.8 dB (CI to +15.1).  [ours] ±20 dB
+    // [paper] says ±10 dB (−10 = pp, 0 = between mp and mf, +10 = f), but its own Table 1 means reach −13.4 dB (CI to −20.5)
+    // and +7.8 dB (CI to +15.1).  [ours] ±20 dB; the paper's anchors are labelled on the scale and in the readout.
     value: (u) => -20 + 40 * u,
     pos: (v) => (v + 20) / 40,
-    defaultValue: 0, nominalValue: 0,
-    ticks: [-20, -10, 0, 10, 20].map((v) => ({ value: v, label: v === 0 ? '0 dB' : signed(v, 0) })),
-    read: (v) => ({ main: signed(v, 1), unit: 'dB', sub: v < -14 ? 'very soft (pp)' : v < -5 ? 'soft' : v < 5 ? 'medium' : v < 13 ? 'loud' : 'very loud (ff)' }),
+    defaultValue: 0,
+    ticks: [-20, -10, 0, 10, 20].map((v) => ({ value: v, label: v === 0 ? '0 dB' : v === -10 ? '−10 pp' : v === 10 ? '+10 f' : signed(v, 0) })),
+    read: (v) => ({ main: signed(v, 1), unit: 'dB', sub: v < -15 ? 'softer than pp' : v < -7.5 ? 'pp' : v < -2.5 ? 'p – mp' : v < 2.5 ? 'mp – mf' : v < 7.5 ? 'mf – f' : v < 15 ? 'f' : 'louder than f' }),
     record: (v) => v,
   },
   {
     id: 'artic', group: 'performance', name: 'Articulation',
-    help: 'How long each note lasts before the next one starts. Legato: notes joined with no gap. Staccato: short, detached notes (staccatissimo = a quarter of the time between onsets).',
+    help: 'How long each note lasts, as a share of the time from its start to the start of the next note. Legato: notes joined with no gap. Staccatissimo: a quarter of that time. As in the paper\'s Table 1, values above 1 are in the staccato range and values below 1 are legato.',
     caption: 'legato ↔ staccato',
     top: 'STACCATISSIMO', bottom: 'LEGATO', topSub: 'short, detached', bottomSub: 'smooth, joined',
     // [paper] legato .. staccatissimo (25 % of the inter-onset interval); Table 1's unit is arbitrary, with >1 = staccato, <1 = legato.
-    // [ours] scale 0..3, sounding length = (1 − a/4) × written length   (a = 0 → 100 %, a = 3 → 25 %)
+    // [ours] scale 0..3, sounding length = (1 − a/4) × inter-onset interval   (a = 0 → 100 %, a = 3 → 25 %), never longer
+    // than the written note.  a = 1 is the paper's legato / staccato boundary.
     value: (u) => 3 * u,
     pos: (v) => v / 3,
-    defaultValue: 1.34, nominalValue: 1,
-    ticks: [0, 1, 2, 3].map((v) => ({ value: v, label: v === 1 ? '1' : `${v}` })),
-    read: (v) => ({ main: fmt(v, 2), unit: 'a.u.', sub: v < 0.5 ? 'legato' : v < 1.1 ? 'legato–portato' : v < 1.8 ? 'detached / non-legato' : v < 2.5 ? 'staccato' : 'staccatissimo' }),
+    defaultValue: 1,
+    ticks: [0, 1, 2, 3].map((v) => ({ value: v, label: `${v}` })),
+    read: (v) => ({ main: fmt(v, 2), unit: 'a.u.', sub: v < 0.5 ? 'legato' : v < 1 ? 'legato–portato' : v < 1.8 ? 'detached / non-legato' : v < 2.5 ? 'staccato' : 'staccatissimo' }),
     record: (v) => v,
   },
   {
@@ -86,20 +91,20 @@ export const PARAMS = [
     // [paper] reverse .. forward, centre = no effect, range ~2x that of Bresin & Friberg (2000).  [ours] at the extremes the arch swings the tempo by 40 % and the level by 8 dB
     value: (u) => -1 + 2 * u,
     pos: (v) => (v + 1) / 2,
-    defaultValue: 0, nominalValue: 0,
+    defaultValue: 0,
     ticks: [-1, 0, 1].map((v) => ({ value: v, label: v === 0 ? 'none' : v > 0 ? 'fwd' : 'rev' })),
     read: (v) => ({ main: signed(v, 2), unit: '', sub: Math.abs(v) < 0.05 ? 'no phrasing' : v > 0 ? 'forward phrasing' : 'reverse phrasing' }),
     record: (v) => v,
   },
   {
     id: 'register', group: 'structure', name: 'Register',
-    help: 'Transposes the whole piece up or down, in semitones from the original register (±24 = ±2 octaves). The readout also gives the resulting average pitch of the melody.',
+    help: 'Transposes the whole piece up or down, in semitones from the original register (±24 = ±2 octaves). Every note moves by the same amount. The readout also gives the resulting average pitch of the melody.',
     caption: 'pitch: transposition',
     top: 'HIGH', bottom: 'LOW', topSub: '+24 semitones', bottomSub: '−24 semitones',
     // [paper] −24 .. +24 semitones relative to the original register
     value: (u) => Math.round(-24 + 48 * u),
     pos: (v) => (v + 24) / 48,
-    defaultValue: 0, nominalValue: 0,
+    defaultValue: 0,
     ticks: [-24, -12, 0, 12, 24].map((v) => ({ value: v, label: v === 0 ? 'original' : signed(v, 0) })),
     read: (v, s) => ({ main: signed(v, 0), unit: 'semitones', sub: `melody centred on ${midiName(s.meanMelodyPitch + v)} (MIDI ${Math.round(s.meanMelodyPitch + v)})` }),
     record: (v, s) => s.meanMelodyPitch + v,
@@ -110,10 +115,10 @@ export const PARAMS = [
     help: 'Which instrument plays the melody (the accompaniment stays on piano): French horn (dark), flute (medium), trumpet (bright), as in the paper.',
     caption: 'soloist: horn · flute · trumpet',
     top: 'TRUMPET', bottom: 'FRENCH HORN', topSub: 'brightest', bottomSub: 'darkest',
-    // [paper] 3 zones of equal length: horn [0,1], flute (1,2], trumpet (2,3].  Fader snaps to the middle of each zone.
-    value: (u) => (u < 1 / 3 ? 1 : u < 2 / 3 ? 2 : 3),
+    // [paper] 3 zones of equal length: horn [0,1], flute (1,2], trumpet (2,3] (closed at the top).  Fader snaps to the middle of each zone.
+    value: (u) => (u <= 1 / 3 ? 1 : u <= 2 / 3 ? 2 : 3),
     pos: (v) => (v - 0.5) / 3,
-    defaultValue: 2, nominalValue: 2,
+    defaultValue: 2,
     ticks: [{ value: 1, label: 'horn' }, { value: 2, label: 'flute' }, { value: 3, label: 'trumpet' }],
     read: (v) => ({ main: INSTRUMENT_LABELS[INSTRUMENTS[v - 1]], unit: '', sub: ['dark · warm', 'medium brightness', 'bright · brassy'][v - 1] }),
     record: (v) => v,
@@ -121,15 +126,17 @@ export const PARAMS = [
   },
   {
     id: 'attack', group: 'instrument', name: 'Attack speed',
-    help: 'How quickly each solo note reaches full volume. Up = fast, almost instant. Down = slow swell, up to 1 second (never more than 75 % of the note).',
+    help: 'How quickly each solo note reaches full volume, as a share of that note\'s length (never more than 75 % of the note, or 1 second). Up = instant. Down = a slow swell. Short notes therefore get short attacks and long notes long ones, as in the paper.',
     caption: 'note onset: sharp ↔ slow',
-    top: 'INSTANT', bottom: 'VERY SLOW', topSub: '≈ 0 ms', bottomSub: '1000 ms',
-    // [paper] "very slow .. instantaneous", max 1000 ms and at most 75 % of the note.  Table 1 reports attack *time* in ms.  [ours] curved scale for resolution at short times
-    value: (u) => 1000 * Math.pow(1 - u, 2),
-    pos: (v) => 1 - Math.sqrt(v / 1000),
-    defaultValue: 100, nominalValue: 100,
-    ticks: [0, 50, 100, 250, 500, 1000].map((v) => ({ value: v, label: v === 0 ? '0' : `${v}` })),
-    read: (v) => ({ main: fmt(v, v < 10 ? 1 : 0), unit: 'ms', sub: v < 30 ? 'sharp attack' : v < 150 ? 'medium attack' : v < 400 ? 'soft attack' : 'very slow swell' }),
+    top: 'INSTANT', bottom: 'VERY SLOW', topSub: '0 % of the note', bottomSub: '75 % of the note',
+    // [paper] "very slow .. instantaneous".  The attack is a PERCENTAGE of the performed duration of each note, at most 75 %
+    // of it and at most 1000 ms.  Table 1 reports it in ms for the longest notes of each score (see effectiveAttackMs in engine.js).
+    // [ours] curved scale for resolution at short attacks
+    value: (u) => 75 * Math.pow(1 - u, 2),
+    pos: (v) => 1 - Math.sqrt(v / 75),
+    defaultValue: 10,
+    ticks: [0, 5, 10, 20, 40, 75].map((v) => ({ value: v, label: v === 0 ? '0' : `${v} %` })),
+    read: (v) => ({ main: fmt(v, v < 10 ? 1 : 0), unit: '% of note', sub: v < 3 ? 'sharp attack' : v < 12 ? 'medium attack' : v < 30 ? 'soft attack' : 'very slow swell' }),
     record: (v) => v,
   },
 ];

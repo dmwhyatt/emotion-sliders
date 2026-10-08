@@ -1,0 +1,9 @@
+{
+  "name": "emotion-sliders",
+  "private": true,
+  "type": "module",
+  "description": "Interactive version of Bresin & Friberg (2011). No dependencies; the app runs in the browser, `npm test` checks it against the paper.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

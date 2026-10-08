@@ -74,7 +74,7 @@ export class Mixer {
     knob.append(h('i'));
     const ticks = h('div', 'ticks');
     for (const t of p.ticks) {
-      const tk = h('div', `tick${t.value === p.nominalValue ? ' nominal' : ''}`);
+      const tk = h('div', `tick${t.value === p.defaultValue ? ' nominal' : ''}`);
       tk.style.bottom = `${p.pos(t.value) * 100}%`;
       tk.append(h('span', null, t.label));
       ticks.append(tk);
@@ -135,7 +135,7 @@ export class Mixer {
       else if (e.key === 'Enter' || e.key === '0') { this.store.setValue(p.id, p.defaultValue, 'user'); e.preventDefault(); return; }
       else return;
       e.preventDefault();
-      if (p.discrete) this.store.setValue(p.id, this.store.value(p.id) + Math.sign(step) * (p.id === 'register' ? big : 1), 'user');
+      if (p.discrete) this.store.setValue(p.id, this.store.value(p.id) + (p.id === 'register' ? step * big : Math.sign(step)), 'user');
       else this.store.setPos(p.id, this.store.pos[p.id] + step * big * 0.01, 'user');
     });
   }

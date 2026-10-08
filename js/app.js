@@ -1,10 +1,10 @@
 import { Sampler } from './sampler.js';
-import { Engine, scheduleOffline } from './engine.js';
+import { Engine, scheduleOffline, offlineLength } from './engine.js';
 import { ParamStore } from './params.js';
 import { Mixer } from './mixer.js';
 import { PARAMS } from './paper.js';
 import {
-  Experiment, SCORE_IDS, EMOTION_COLORS, renderResults, loadSessions, clearSessions, toCSV, download,
+  Experiment, stimulusIds, EMOTION_COLORS, renderResults, loadSessions, clearSessions, toCSV, download,
 } from './experiment.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -81,7 +81,7 @@ const volGain = (v) => 1.6 * Math.pow(Number(v), 2);
 function buildScorePicker() {
   const box = $('#scorePicker');
   box.textContent = '';
-  for (const id of SCORE_IDS) {
+  for (const id of stimulusIds(scores)) {
     const b = document.createElement('button');
     b.dataset.score = id;
     b.innerHTML = `${id}<small>composed ${scores[id].composedEmotion}</small>`;
@@ -149,14 +149,15 @@ async function exportWav() {
   btn.textContent = 'Rendering…';
   try {
     const sr = 44100;
-    const off = new OfflineAudioContext(2, sr * 90, sr);
+    const v = { ...engine.v };
+    const seconds = offlineLength(engine.score, v) + 2.5;      // slow settings (down to x0.1) can run to minutes
+    const off = new OfflineAudioContext(2, Math.ceil(seconds * sr), sr);
     const sam = new Sampler(off);
     sam.banks = sampler.banks;                       // decoded buffers are shareable between contexts
     sam.master.gain.value = volGain($('#volume').value);
-    const { endTime } = scheduleOffline(sam, engine.score, { ...engine.v }, 1);
-    const seconds = Math.min(89, endTime + 2.5);
+    scheduleOffline(sam, engine.score, v, 1);
     const buf = await off.startRendering();
-    download(`${engine.scoreId}-render.wav`, new Blob([encodeWav(buf, Math.floor(seconds * sr))], { type: 'audio/wav' }), 'audio/wav');
+    download(`${engine.scoreId}-render.wav`, new Blob([encodeWav(buf, buf.length)], { type: 'audio/wav' }), 'audio/wav');
   } finally {
     btn.disabled = false;
     btn.textContent = label;
@@ -177,7 +178,15 @@ function encodeWav(buf, frames) {
 
 // ---- modes -----------------------------------------------------------------------------------------------
 function wireTabs() {
-  $('#tabExplore').onclick = () => setMode('explore');
+  $('#tabExplore').onclick = () => {
+    // Explore shares the faders with the task, so leaving a session half-way would corrupt it: abandon it instead.
+    if (state.mode === 'experiment' && state.expPhase === 'trial' && exp.current) {
+      if (!confirm('Leave the experiment? The pieces you have not finished will not be recorded.')) return;
+      exp.abort();
+      state.expPhase = 'setup';
+    }
+    setMode('explore');
+  };
   $('#tabExperiment').onclick = () => setMode('experiment');
 }
 
@@ -187,8 +196,6 @@ function setMode(mode, phase = null) {
   if (mode === 'experiment') {
     if (phase) state.expPhase = phase;
     else if (!state.expPhase) state.expPhase = 'setup';
-    // coming back to an unfinished session: go straight back to its current piece
-    if (!phase && prev !== 'experiment' && state.expPhase === 'trial' && !exp.current) state.expPhase = 'setup';
   }
   state.phase = mode === 'experiment' ? state.expPhase : null;
   if (mode !== prev || phase) engine.stop();
@@ -209,7 +216,6 @@ function setMode(mode, phase = null) {
   $('#loopChk').closest('label').hidden = inTrial;
   if (mode === 'explore') { engine.loop = $('#loopChk').checked; markScore(); buildProgressTicks(); mixer.refresh(); }
   if (state.phase === 'setup') renderStored();
-  if (inTrial && !phase && prev !== 'experiment') showTrial(exp.current);   // returning from Explore mid-session
 }
 
 // ---- experiment ---------------------------------------------------------------------------------------------
@@ -244,7 +250,7 @@ function enterTrial(trial) {
   showTrial(trial);
 }
 
-/** Put a trial on screen and start it playing (does not touch the recording of fader movements). */
+/** Put a trial on screen and start it playing. */
 function showTrial(trial) {
   engine.setScore(trial.score);
   engine.loop = true;
@@ -297,6 +303,9 @@ function drawResults() {
   $('#resMine').classList.toggle('active', state.resultsScope === 'mine' && !!state.lastSession);
   $('#resPool').classList.toggle('active', state.resultsScope === 'pool' || !state.lastSession);
   const pooled = state.resultsScope === 'pool' || !state.lastSession;
+  const many = sessions.length > 1;                  // renderResults draws one dot per participant when there are several
+  for (const id of ['lgRing', 'lgDot']) $(`#${id}`).hidden = many;
+  for (const id of ['lgPart', 'lgMean']) $(`#${id}`).hidden = !many;
   $('#resultsTitle').textContent = pooled ? `Everyone on this computer (${sessions.length})` : `Results for ${sessions[0].participant}`;
   $('#resultsSub').textContent = pooled
     ? 'Each dot is one participant’s mean over the four scores; the large marker is the group mean.'
