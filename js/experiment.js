@@ -6,10 +6,14 @@
 // fader positions are analysed in the paper -- we store those, plus a thinned log of the movements.
 
 import { PARAMS, EMOTIONS, TABLE1, INSTRUMENTS } from './paper.js';
+import { effectiveAttackMs } from './engine.js';
 
-export const SCORE_IDS = ['A02', 'G04', 'P02', 'T01'];
+/** The paper's four stimulus scores (every score in the data except the practice piece). */
+export const stimulusIds = (scores) => Object.keys(scores).filter((id) => !scores[id].practice);
+/** The practice piece: like the paper's training score it is not one of the stimuli. */
+export const practiceId = (scores) => Object.keys(scores).find((id) => scores[id].practice) || null;
 export const EMOTION_COLORS = { neutral: '#9aa7b4', happy: '#f4b53f', scary: '#ef5d5d', peaceful: '#4cc9a0', sad: '#6c8cff' };
-const STORE_KEY = 'emotion-sliders.sessions.v1';
+const STORE_KEY = 'emotion-sliders.sessions.v2';   // v2: attack is a % of the note and attackMs is the effective attack on the longest note
 
 // the variables compared with the paper's Table 1 (phrasing is not in the table)
 export const COMPARE = [
@@ -18,7 +22,7 @@ export const COMPARE = [
   { id: 'artic', name: 'Articulation', unit: 'a.u.', field: 'articulation', digits: 2 },
   { id: 'register', name: 'Register', unit: 'MIDI note', field: 'registerMidi', digits: 0 },
   { id: 'timbre', name: 'Instrument', unit: '1 horn · 2 flute · 3 trumpet', field: 'timbre', digits: 2 },
-  { id: 'attack', name: 'Attack time', unit: 'ms', field: 'attackMs', digits: 0 },
+  { id: 'attack', name: 'Attack time', unit: 'ms, longest note', field: 'attackMs', digits: 0 },
 ];
 
 export function shuffle(a) {
@@ -30,11 +34,11 @@ export function shuffle(a) {
   return a;
 }
 
-export function makeTrials(practice) {
+export function makeTrials(scoreIds, practiceScore = null) {
   const t = [];
-  for (const score of SCORE_IDS) for (const emotion of EMOTIONS) t.push({ score, emotion });
+  for (const score of scoreIds) for (const emotion of EMOTIONS) t.push({ score, emotion });
   const order = shuffle(t).map((x, i) => ({ ...x, index: i + 1, practice: false }));
-  if (practice) order.unshift({ score: 'G04', emotion: null, index: 0, practice: true });
+  if (practiceScore) order.unshift({ score: practiceScore, emotion: null, index: 0, practice: true });
   return order;
 }
 
@@ -52,12 +56,12 @@ export class Experiment {
       startedAt: new Date().toISOString(),
       trials: [],
     };
-    this.queue = makeTrials(practice);
+    this.queue = makeTrials(stimulusIds(this.scores), practice ? practiceId(this.scores) : null);
     this.i = -1;
     return this.advance();
   }
 
-  get current() { return this.queue[this.i] || null; }
+  get current() { return (this.queue && this.queue[this.i]) || null; }
   get total() { return this.queue.filter((t) => !t.practice).length; }
 
   /** Record the trial that just finished (unless practice), then move to the next one.  Returns it, or null at the end. */
@@ -87,9 +91,18 @@ export class Experiment {
       moves: log.length,
       tempoMultiplier: v.tempo, notesPerSec: rec.tempo, levelDb: rec.level, articulation: rec.artic,
       phrasing: rec.phrasing, transposition: v.register, registerMidi: rec.register,
-      timbre: rec.timbre, instrument: INSTRUMENTS[rec.timbre - 1], attackMs: rec.attack,
+      timbre: rec.timbre, instrument: INSTRUMENTS[rec.timbre - 1],
+      attackPercent: rec.attack, attackMs: effectiveAttackMs(score, v),
       log,
     };
+  }
+
+  /** Leave a session unfinished: nothing is saved and the fader-movement log stops. */
+  abort() {
+    this.store.stopLog();
+    this.queue = [];
+    this.i = 0;
+    this.session = null;
   }
 
   finish() {
@@ -114,17 +127,25 @@ export function clearSessions() { try { localStorage.removeItem(STORE_KEY); } ca
 
 // ---- export ------------------------------------------------------------------------------------------
 
+/** One CSV cell.  Text is quoted, and a leading = + - @ (which a spreadsheet would run as a formula) is defused with a '. */
+export function csvCell(x) {
+  if (typeof x === 'number') return Math.round(x * 1e4) / 1e4;
+  let str = String(x ?? '');
+  if (/^[=+\-@\t\r]/.test(str)) str = `'${str}`;
+  return `"${str.replace(/"/g, '""')}"`;
+}
+
 export function toCSV(sessions) {
   const cols = ['participant', 'session', 'trial', 'score', 'composed_emotion', 'target_emotion', 'seconds', 'slider_moves',
     'tempo_multiplier', 'tempo_notes_per_sec', 'sound_level_db', 'articulation', 'phrasing', 'transposition_semitones',
-    'register_mean_midi', 'timbre_position', 'instrument', 'attack_ms'];
+    'register_mean_midi', 'timbre_position', 'instrument', 'attack_percent_of_note', 'attack_ms_longest_note'];
   const rows = [cols.join(',')];
   for (const s of sessions) {
     for (const t of s.trials) {
       const r = [s.participant, s.id, t.trial, t.score, t.composedEmotion, t.emotion, t.seconds, t.moves,
         t.tempoMultiplier, t.notesPerSec, t.levelDb, t.articulation, t.phrasing, t.transposition,
-        t.registerMidi, t.timbre, t.instrument, t.attackMs]
-        .map((x) => (typeof x === 'number' ? Math.round(x * 1e4) / 1e4 : `"${String(x).replace(/"/g, '""')}"`));
+        t.registerMidi, t.timbre, t.instrument, t.attackPercent, t.attackMs]
+        .map(csvCell);
       rows.push(r.join(','));
     }
   }

@@ -7,10 +7,14 @@ The .ly files are the single source of truth for the four scores (hand-transcrib
 Bresin & Friberg, 2011).  LilyPond renders them back to notation (png/) so the transcription can be
 proof-read against the paper, and writes the MIDI that this script turns into the app's note lists.
 
-Each note becomes  [onset_beats, duration_beats, midi_pitch, role]  with role
+Each note becomes  [onset_beats, duration_beats, midi_pitch, role, ioi_beats]  with role
     0 = solo line (highest note of the treble staff at each onset -> horn / flute / trumpet)
     1 = piano, right hand (the other treble-staff notes)
     2 = piano, left hand (bass staff)
+and ioi_beats the inter-onset interval: beats from this note's onset to the next onset on the same
+staff (its own duration for the last one).  The paper defines articulation relative to this interval.
+
+The score marked  practice=True  is not one of the paper's four stimuli (see tools/scores/PRAC.ly).
 """
 import collections
 import json
@@ -37,7 +41,11 @@ SCORES = {
                 bars=[0, 4, 8, 12, 16, 20, 24, 28, 32]),
     "P02": dict(emotion="scary", notes_per_sec=5.4, phrases=[[0, 6], [6, 12], [12, 20], [20, 26]],
                 bars=[0, 3, 6, 9, 12, 16, 20, 24, 26]),
+    # T01 is only three bars long, so the whole piece is one phrase (the others use two-bar phrases)
     "T01": dict(emotion="sad", notes_per_sec=1.3, phrases=[[0, 9]], bars=[0, 3, 6, 9]),
+    # practice piece: an original neutral tune, NOT one of the paper's stimuli
+    "PRAC": dict(emotion="neutral", notes_per_sec=1.8, phrases=[[0, 8], [8, 16], [16, 24]],
+                 bars=[0, 4, 8, 12, 16, 20, 24], practice=True),
 }
 
 
@@ -69,7 +77,21 @@ def assign_roles(rh, lh):
     for on, off, p in lh:
         notes.append([round(on, 5), round(off - on, 5), p, 2])
     notes.sort(key=lambda n: (n[0], -n[2]))
+    add_ioi(notes)
     return notes
+
+
+def add_ioi(notes):
+    """Append each note's inter-onset interval: beats to the next onset on the same staff
+    (treble = roles 0/1, bass = role 2), or the note's own length if nothing follows."""
+    def staff(role):
+        return 1 if role == 2 else 0
+
+    onsets = {0: sorted({n[0] for n in notes if staff(n[3]) == 0}),
+              1: sorted({n[0] for n in notes if staff(n[3]) == 1})}
+    for n in notes:
+        later = [t for t in onsets[staff(n[3])] if t > n[0] + 1e-6]
+        n.append(round(later[0] - n[0], 5) if later else n[1])
 
 
 def write_split_midi(path, name, notes, bpm):
@@ -88,7 +110,7 @@ def write_split_midi(path, name, notes, bpm):
                                                      f"nominal tempo {bpm:.1f} BPM", time=0))
         tr.append(mido.Message("program_change", program=prog, channel=ch, time=0))
         ev = []
-        for on, dur, p, r in notes:
+        for on, dur, p, r, _ioi in notes:
             if r == role:
                 ev.append((round(on * ppq), 1, p))
                 ev.append((round((on + dur) * ppq), 0, p))
@@ -113,14 +135,14 @@ def main():
             shutil.copy(Path(tmp) / f"{sid}.png", PNG / f"{sid}.png")
             rh, lh = read_midi(Path(tmp) / f"{sid}.midi")
             notes = assign_roles(rh, lh)
-            beats = max(on + d for on, d, _, _ in notes)
+            beats = max(n[0] + n[1] for n in notes)
             onsets = len({n[0] for n in notes})
             duration_s = onsets / meta["notes_per_sec"]
             bpm0 = beats * 60 / duration_s
             melody = [n[2] for n in notes if n[3] == 0]
             mean_mel = statistics.fmean(melody)
             out[sid] = dict(
-                id=sid, composedEmotion=meta["emotion"], beats=beats, bpm0=round(bpm0, 2),
+                id=sid, composedEmotion=meta["emotion"], practice=bool(meta.get("practice")), beats=beats, bpm0=round(bpm0, 2),
                 notesPerSec=meta["notes_per_sec"], onsetCount=onsets, phrases=meta["phrases"], bars=meta["bars"],
                 meanMelodyPitch=round(mean_mel, 2), sdMelodyPitch=round(statistics.pstdev(melody), 2),
                 notes=notes)

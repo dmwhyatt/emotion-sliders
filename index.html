@@ -39,11 +39,14 @@
       <p>Twenty short pieces — four scores × five emotions, in random order. For each one you get an emotion
          (e.g. <b class="e-happy">happy</b>) and you move the seven faders until the music sounds like it. The faders stay where you
          leave them when you move to the next piece, as in the original study. Only your final fader positions are scored.</p>
+      <p>There is no time limit. Judge each piece in relation to the others, and use the whole range of the faders. You can pause,
+         stop or replay a piece as often as you like, and the same piece may come up several times in a row. You cannot go back
+         to an earlier piece.</p>
       <div class="form-row">
         <label for="pid">Participant name / ID</label>
         <input id="pid" type="text" autocomplete="off" placeholder="e.g. Sam" maxlength="40">
       </div>
-      <label class="check"><input id="practiceChk" type="checkbox" checked> Start with a practice piece (not recorded)</label><br>
+      <label class="check"><input id="practiceChk" type="checkbox" checked> Start with a practice piece (a separate short tune, not recorded)</label><br>
       <label class="check" style="margin-top:8px"><input id="blindChk" type="checkbox" checked> Hide the numeric readouts during the task <span class="muted">(the original participants only had physical sliders; numbers would also reveal which score is playing)</span></label>
       <div class="row-actions"><button id="beginBtn" class="primary big">Begin</button></div>
     </div>
@@ -73,8 +76,10 @@
       </div>
       <div class="legend">
         <span><i class="lg-band"></i> paper: mean ± 95 % CI (17 musicians, Table 1)</span>
-        <span><i class="lg-ring"></i> each of the four scores</span>
-        <span><i class="lg-dot"></i> mean over scores</span>
+        <span id="lgRing"><i class="lg-ring"></i> each of the four scores</span>
+        <span id="lgDot"><i class="lg-dot"></i> mean over the four scores</span>
+        <span id="lgPart" hidden><i class="lg-part"></i> each participant (mean over the four scores)</span>
+        <span id="lgMean" hidden><i class="lg-dot"></i> group mean</span>
       </div>
       <div id="resultsBody"></div>
       <div class="row-actions">
