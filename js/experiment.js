@@ -12,7 +12,10 @@ import { effectiveAttackMs } from './engine.js';
 export const stimulusIds = (scores) => Object.keys(scores).filter((id) => !scores[id].practice);
 /** The practice piece: like the paper's training score it is not one of the stimuli. */
 export const practiceId = (scores) => Object.keys(scores).find((id) => scores[id].practice) || null;
-export const EMOTION_COLORS = { neutral: '#9aa7b4', happy: '#f4b53f', scary: '#ef5d5d', peaceful: '#4cc9a0', sad: '#6c8cff' };
+// The emotions are categorical data, so they take the CMS theme's categorical palette (defined in css/style.css as
+// --emo-*): the plain colour for fills and a darker shade for text.
+export const EMOTION_COLORS = Object.fromEntries(EMOTIONS.map((e) => [e, `var(--emo-${e})`]));
+export const EMOTION_INK = Object.fromEntries(EMOTIONS.map((e) => [e, `var(--emo-${e}-ink)`]));
 const STORE_KEY = 'emotion-sliders.sessions.v2';   // v2: attack is a % of the note and attackMs is the effective attack on the longest note
 
 // the variables compared with the paper's Table 1 (phrasing is not in the table)
@@ -228,7 +231,7 @@ export function renderResults(container, sessions) {
     EMOTIONS.forEach((e, i) => {
       const y = top + rowH * i + rowH / 2;
       const col = EMOTION_COLORS[e];
-      svg.append(svgEl('text', { x: left - 8, y: y + 4, class: 'rowlab', 'text-anchor': 'end', fill: col }, e));
+      svg.append(svgEl('text', { x: left - 8, y: y + 4, class: 'rowlab', 'text-anchor': 'end', fill: EMOTION_INK[e] }, e));
       const [m, a, b] = paper[e];
       svg.append(svgEl('rect', { x: x(a), y: y - 8, width: Math.max(2, x(b) - x(a)), height: 16, rx: 3, fill: col, opacity: 0.22 }));
       svg.append(svgEl('line', { x1: x(m), x2: x(m), y1: y - 10, y2: y + 10, stroke: col, 'stroke-width': 2.5 }));
@@ -236,7 +239,7 @@ export function renderResults(container, sessions) {
       if (many) for (const s of cell.perSession) svg.append(svgEl('circle', { cx: x(s.mean), cy: y, r: 3, fill: col, opacity: 0.55 }, null));
       else for (const v of (cell.perSession[0]?.values || [])) svg.append(svgEl('circle', { cx: x(v), cy: y, r: 3, fill: 'none', stroke: col, 'stroke-width': 1.5 }));
       if (cell.mean != null) {
-        const dot = svgEl('circle', { cx: x(cell.mean), cy: y, r: 6, fill: col, stroke: 'var(--bg)', 'stroke-width': 2 });
+        const dot = svgEl('circle', { cx: x(cell.mean), cy: y, r: 6, fill: col, stroke: 'var(--cam-fill)', 'stroke-width': 2 });
         const tip = svgEl('title', {}, `${e}: ${cell.mean.toFixed(c.digits)} (paper ${m.toFixed(c.digits)}, 95% CI ${a.toFixed(c.digits)} to ${b.toFixed(c.digits)})`);
         dot.append(tip);
         svg.append(dot);

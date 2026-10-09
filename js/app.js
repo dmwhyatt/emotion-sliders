@@ -4,19 +4,11 @@ import { ParamStore } from './params.js';
 import { Mixer } from './mixer.js';
 import { PARAMS } from './paper.js';
 import {
-  Experiment, stimulusIds, EMOTION_COLORS, renderResults, loadSessions, clearSessions, toCSV, download,
+  Experiment, stimulusIds, renderResults, loadSessions, clearSessions, toCSV, download,
 } from './experiment.js';
 
 const $ = (sel) => document.querySelector(sel);
 const app = $('#app');
-
-// ---- theme ------------------------------------------------------------------------------------------
-try { const t = localStorage.getItem('emotion-sliders.theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) { /* storage blocked */ }
-$('#themeBtn').onclick = () => {
-  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = next;
-  try { localStorage.setItem('emotion-sliders.theme', next); } catch (e) { /* ignore */ }
-};
 
 // ---- boot -----------------------------------------------------------------------------------------
 let ctx, sampler, engine, store, mixer, exp, scores;
@@ -227,10 +219,10 @@ function setMode(mode, phase = null) {
   app.dataset.mode = mode;
   app.dataset.phase = state.phase || '';
   app.dataset.blind = String($('#blindChk').checked);
-  $('#tabExplore').classList.toggle('active', mode === 'explore');
-  $('#tabExperiment').classList.toggle('active', mode === 'experiment');
-  $('#tabExplore').setAttribute('aria-selected', String(mode === 'explore'));
-  $('#tabExperiment').setAttribute('aria-selected', String(mode === 'experiment'));
+  for (const [tab, on] of [['#tabExplore', mode === 'explore'], ['#tabExperiment', mode === 'experiment']]) {
+    $(tab).classList.toggle('is-current', on);
+    if (on) $(tab).setAttribute('aria-current', 'true'); else $(tab).removeAttribute('aria-current');
+  }
 
   const inTrial = mode === 'experiment' && state.phase === 'trial';
   $('#screenSetup').hidden = !(mode === 'experiment' && state.phase === 'setup');
@@ -289,7 +281,7 @@ function showTrial(trial) {
   } else {
     $('#trialCount').textContent = `Piece ${trial.index} of ${exp.total}`;
     $('#trialFill').style.width = `${(done / exp.total) * 100}%`;
-    $('#trialPrompt').innerHTML = `Make this piece sound <b style="color:${EMOTION_COLORS[trial.emotion]}">${trial.emotion}</b>`;
+    $('#trialPrompt').innerHTML = `Make this piece sound <b class="e-${trial.emotion}">${trial.emotion}</b>`;
   }
   $('#nextBtn').textContent = trial.index === exp.total ? 'Finish ✓' : 'Next piece →';
   engine.play();

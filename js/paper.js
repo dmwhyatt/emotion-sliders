@@ -35,9 +35,9 @@ const signed = (v, d = 1) => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(d);
 // `pos(value)` goes back.  `describe(v, score)` returns the readout.
 // ---------------------------------------------------------------------------------------------
 export const GROUPS = {
-  performance: { label: 'Performance', note: 'how the notes are played', color: 'var(--c-perf)' },
-  structure:   { label: 'Structure',   note: 'what is played',           color: 'var(--c-struct)' },
-  instrument:  { label: 'Instrument',  note: 'the sound of the soloist', color: 'var(--c-instr)' },
+  performance: { label: 'Performance', note: 'how the notes are played' },
+  structure:   { label: 'Structure',   note: 'what is played' },
+  instrument:  { label: 'Instrument',  note: 'the sound of the soloist' },
 };
 
 export const PARAMS = [

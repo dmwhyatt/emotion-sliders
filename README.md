@@ -6,7 +6,7 @@ An interactive, real-time version of the production experiment in
 
 Pick one of the four scores, move seven faders, and hear the music change as you move them. In **Experiment** mode a participant renders all four scores as *happy, sad, scary, peaceful* and *neutral* (20 pieces, random order), and the results are plotted against the paper's Table 1.
 
-Everything runs locally in the browser. No server, no accounts, nothing leaves the laptop.
+Everything runs locally in the browser. No accounts, nothing leaves the laptop: the page makes no requests to any other site (the fonts are self-hosted too), and a test checks that.
 
 ## Run it
 
@@ -66,6 +66,16 @@ This is General-MIDI-class sampling, not the Vienna Symphonic Library the author
 python3 tools/build_bank.py /path/to/font.sf3     # needs numpy + soundfile; rebuilds audio/
 ```
 
+## Look and feel
+
+The page uses the [CMS web theme](https://github.com/cms-cambridge/cms-web-theme) (its framework-agnostic build, no Bootstrap): the colours, the type, the header, buttons, cards, notices, inputs, the welcome box and the footer are the theme's `--cam-*` tokens and `.cam-*` classes. What the theme has no component for (the faders, the segmented switch, the transport bar, the results charts) is in `css/style.css`, built from the same tokens.
+
+* **Vendored, not linked.** `css/vendor/cambridge-tokens.css` is a verbatim copy of the theme (commit `07a0541`, MIT); `css/vendor/README.md` says how to update it. Don't edit it in place.
+* **Fonts are self-hosted.** The theme asks for Open Sans and Source Serif 4; `css/fonts.css` serves Latin-subset copies from `fonts/` (SIL Open Font Licence, see `fonts/LICENSE.txt`), so there is no request to Google Fonts and the page looks the same offline.
+* **Light only.** The theme has no dark palette, so the earlier dark mode and its toggle are gone rather than invented.
+* **Emotion colours** are categorical data, so they use the theme's categorical palette (happy Tango, scary Purple Heart, peaceful Vida Loca, sad Science Blue, neutral the muted grey), with the darker shades for text. The fader groups are not colour-coded.
+* The footer says this is not an official University of Cambridge page, as the theme asks of sites that aren't.
+
 ## Where the paper left a choice open
 
 Marked `[ours]` in `js/paper.js` / `js/engine.js`:
@@ -90,7 +100,11 @@ npm test        # Node 20+, no dependencies
 ## Layout
 
 ```
-index.html, css/        the page
+index.html             the page
+css/style.css           this app's own styles (on the theme's tokens)
+css/fonts.css, fonts/   self-hosted Open Sans and Source Serif 4
+css/vendor/             the CMS web theme, vendored
+assets/                 favicon (from the theme)
 js/paper.js             constants: parameter definitions, Table 1
 js/params.js            fader state + conversion to physical values
 js/mixer.js             the on-screen faders

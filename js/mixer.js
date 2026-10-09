@@ -36,7 +36,6 @@ export class Mixer {
       if (p.group !== lastGroup) {
         const g = GROUPS[p.group];
         groupEl = h('div', 'group');
-        groupEl.style.setProperty('--accent', g.color);
         groupEl.style.setProperty('--n', String(PARAMS.filter((q) => q.group === p.group).length));
         const head = h('div', 'group-head');
         head.append(h('b', null, g.label), h('span', null, g.note));
