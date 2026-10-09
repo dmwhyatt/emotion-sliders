@@ -58,6 +58,7 @@ function init() {
   const sync = (id, value) => engine.set(id, value);
   store.onChange(sync);
   for (const p of PARAMS) sync(p.id, store.value(p.id));
+  buildHelp();
   mixer = new Mixer($('#mixer'), store, () => engine.score, showHelp);
 
   buildScorePicker();
@@ -70,9 +71,33 @@ function init() {
   window.emotionSliders = { ctx, sampler, engine, store, exp, scores };   // handy for debugging in the console
 }
 
+// The help bar holds one message per fader plus the default one, all stacked in the same grid cell with only one
+// visible.  The bar is therefore always as tall as the longest message and never changes size on hover; resizing it
+// moved the faders under the pointer, which changed what was hovered, which resized it again (visible as shaking).
+const helpEls = new Map();
+function buildHelp() {
+  const bar = $('#infobar');
+  bar.textContent = '';
+  helpEls.clear();
+  const add = (key, title, text) => {
+    const msg = document.createElement('div');
+    msg.className = 'help';
+    const b = document.createElement('b');
+    b.textContent = title;
+    const span = document.createElement('span');
+    span.textContent = text;
+    msg.append(b, span);
+    bar.append(msg);
+    helpEls.set(key, msg);
+  };
+  PARAMS.forEach((p, i) => add(p, `${i + 1} · ${p.name}`, p.help));
+  add(null, 'Seven faders, seven musical variables', 'Drag a fader — the music changes as you move it. Hover over a fader to read what it does. Double-click a fader to reset it.');
+  showHelp(null);
+}
+
+/** Show the help for a fader (a PARAMS entry), or the default message for null. */
 function showHelp(p) {
-  $('#infoTitle').textContent = p ? `${PARAMS.indexOf(p) + 1} · ${p.name}` : 'Seven faders, seven musical variables';
-  $('#infoText').textContent = p ? p.help : 'Drag a fader — the music changes as you move it. Hover over a fader to read what it does. Double-click a fader to reset it.';
+  for (const [key, el] of helpEls) el.classList.toggle('on', key === p);
 }
 
 const volGain = (v) => 1.6 * Math.pow(Number(v), 2);
