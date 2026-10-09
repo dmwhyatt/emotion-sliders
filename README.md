@@ -1,4 +1,4 @@
-# Seven musical variables
+# Emotion Mixer
 
 An interactive, real-time version of the production experiment in
 
