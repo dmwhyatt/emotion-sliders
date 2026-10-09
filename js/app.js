@@ -71,19 +71,25 @@ function buildHelp() {
   const bar = $('#infobar');
   bar.textContent = '';
   helpEls.clear();
-  const add = (key, title, text) => {
+  const add = (key, title, text, note) => {
     const msg = document.createElement('div');
     msg.className = 'help';
     const b = document.createElement('b');
     b.textContent = title;
     const span = document.createElement('span');
     span.textContent = text;
+    if (note) {                                  // a sentence about the bold marks, hidden in blind mode where there are none
+      const n = document.createElement('span');
+      n.className = 'bold-note';
+      n.textContent = ` ${note}`;
+      span.append(n);
+    }
     msg.append(b, span);
     bar.append(msg);
     helpEls.set(key, msg);
   };
   PARAMS.forEach((p, i) => add(p, `${i + 1} · ${p.name}`, p.help));
-  add(null, 'Seven faders, seven musical variables', 'Drag a fader — the music changes as you move it. Hover over a fader to read what it does. The bold mark on each scale is where the fader starts; double-click a fader to put it back there.');
+  add(null, 'Seven faders, seven musical variables', 'Drag a fader — the music changes as you move it. Hover over a fader to read what it does. Double-click a fader to put it back where it started.', 'The bold mark on each scale is its starting position.');
   showHelp(null);
 }
 
