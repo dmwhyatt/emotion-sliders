@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/vendor/cambridge-tokens.css">
   <link rel="stylesheet" href="css/style.css">
+  <!-- The theme's optional light/dark toggle. In <head>, not deferred, so a saved choice applies before first paint;
+       without a saved choice the page follows the operating system. -->
+  <script src="js/vendor/cambridge-theme.js"></script>
 </head>
 <body>
 
@@ -37,6 +40,10 @@
       <button id="tabExperiment" class="cam-nav-link">Experiment</button>
       <span class="cam-nav-gap"></span>
       <span class="cam-muted brand-cite">Emotion rendering in music · Bresin &amp; Friberg (2011)</span>
+      <button type="button" class="cam-theme-toggle" data-cam-theme-toggle aria-label="Dark mode" aria-pressed="false" hidden>
+        <svg class="cam-only-light" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13.4 9.3A5.7 5.7 0 0 1 6.7 2.6a5.7 5.7 0 1 0 6.7 6.7z"/></svg>
+        <svg class="cam-only-dark" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="2.6"/><path d="M8 1.6v1.5M8 12.9v1.5M1.6 8h1.5M12.9 8h1.5M3.5 3.5l1.05 1.05M11.45 11.45l1.05 1.05M3.5 12.5l1.05-1.05M11.45 4.55l1.05-1.05"/></svg>
+      </button>
     </div>
   </header>
 
@@ -62,9 +69,9 @@
       <h3>Sessions on this computer <span id="storedCount" class="cam-muted"></span></h3>
       <ul id="storedList" class="stored"></ul>
       <div class="row-actions">
-        <button id="poolBtn" class="cam-btn cam-btn-outline cam-btn-sm">Show pooled results</button>
-        <button id="csvAllBtn" class="cam-btn cam-btn-outline cam-btn-sm">Download all (CSV)</button>
-        <button id="clearBtn" class="cam-btn cam-btn-outline cam-btn-sm danger">Delete all</button>
+        <button id="poolBtn" class="cam-btn cam-btn-outline btn-sm">Show pooled results</button>
+        <button id="csvAllBtn" class="cam-btn cam-btn-outline btn-sm">Download all (CSV)</button>
+        <button id="clearBtn" class="cam-btn cam-btn-outline btn-sm danger">Delete all</button>
       </div>
     </div>
   </section>
@@ -91,10 +98,10 @@
       </div>
       <div id="resultsBody"></div>
       <div class="row-actions">
-        <button id="csvBtn" class="cam-btn cam-btn-sm">Download CSV</button>
-        <button id="jsonBtn" class="cam-btn cam-btn-outline cam-btn-sm">Download JSON (with slider movements)</button>
-        <button id="againBtn" class="cam-btn cam-btn-outline cam-btn-sm">New participant</button>
-        <button id="backBtn" class="cam-btn cam-btn-outline cam-btn-sm">Back to Explore</button>
+        <button id="csvBtn" class="cam-btn btn-sm">Download CSV</button>
+        <button id="jsonBtn" class="cam-btn cam-btn-outline btn-sm">Download JSON (with slider movements)</button>
+        <button id="againBtn" class="cam-btn cam-btn-outline btn-sm">New participant</button>
+        <button id="backBtn" class="cam-btn cam-btn-outline btn-sm">Back to Explore</button>
       </div>
     </div>
   </section>
@@ -114,8 +121,8 @@
     </div>
 
     <div id="transport">
-      <button id="playBtn" class="cam-btn cam-btn-sm" title="Play / pause (space)">▶ Play</button>
-      <button id="stopBtn" class="cam-btn cam-btn-outline cam-btn-sm" title="Stop">■ Stop</button>
+      <button id="playBtn" class="cam-btn btn-sm" title="Play / pause (space)">▶ Play</button>
+      <button id="stopBtn" class="cam-btn cam-btn-outline btn-sm" title="Stop">■ Stop</button>
       <label class="check loop"><input id="loopChk" type="checkbox" checked> Loop</label>
       <div id="progress">
         <div id="progressBar"><i id="progressFill"></i><div id="progressTicks"></div></div>
@@ -123,8 +130,8 @@
       </div>
       <label class="vol" title="Overall volume (not one of the seven variables)">Volume <input id="volume" type="range" min="0" max="1" step="0.01" value="0.7"></label>
       <div class="explore-only">
-        <button id="resetBtn" class="cam-btn cam-btn-outline cam-btn-sm" title="Put every fader back to its starting position">Reset faders</button>
-        <button id="wavBtn" class="cam-btn cam-btn-outline cam-btn-sm" title="Render the current setting to a WAV file">Save WAV</button>
+        <button id="resetBtn" class="cam-btn cam-btn-outline btn-sm" title="Put every fader back to its starting position">Reset faders</button>
+        <button id="wavBtn" class="cam-btn cam-btn-outline btn-sm" title="Render the current setting to a WAV file">Save WAV</button>
       </div>
     </div>
 

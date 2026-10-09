@@ -70,10 +70,10 @@ python3 tools/build_bank.py /path/to/font.sf3     # needs numpy + soundfile; reb
 
 The page uses the [CMS web theme](https://github.com/cms-cambridge/cms-web-theme) (its framework-agnostic build, no Bootstrap): the colours, the type, the header, buttons, cards, notices, inputs, the welcome box and the footer are the theme's `--cam-*` tokens and `.cam-*` classes. What the theme has no component for (the faders, the segmented switch, the transport bar, the results charts) is in `css/style.css`, built from the same tokens.
 
-* **Vendored, not linked.** `css/vendor/cambridge-tokens.css` is a verbatim copy of the theme (commit `07a0541`, MIT); `css/vendor/README.md` says how to update it. Don't edit it in place.
+* **Vendored, not linked.** `css/vendor/cambridge-tokens.css` and the optional dark-mode toggle `js/vendor/cambridge-theme.js` are verbatim copies of the theme (commit `88dc00c`, MIT); `css/vendor/README.md` says how to update them, and `npm test` fails if the app uses a token or class the theme no longer has. Don't edit them in place.
 * **Fonts are self-hosted.** The theme asks for Open Sans and Source Serif 4; `css/fonts.css` serves Latin-subset copies from `fonts/` (SIL Open Font Licence, see `fonts/LICENSE.txt`), so there is no request to Google Fonts and the page looks the same offline.
-* **Light only.** The theme has no dark palette, so the earlier dark mode and its toggle are gone rather than invented.
-* **Emotion colours** are categorical data, so they use the theme's categorical palette (happy Tango, scary Purple Heart, peaceful Vida Loca, sad Science Blue, neutral the muted grey), with the darker shades for text. The fader groups are not colour-coded.
+* **Light and dark.** The page follows the operating system's setting; the moon/sun button in the header overrides it and the theme remembers the choice in `localStorage`. The theme calls its dark mode a prototype.
+* **Emotion colours** are categorical data, so they use the theme's categorical palette (happy Tango, scary Purple Heart, peaceful Vida Loca, sad Science Blue, neutral the muted grey), with darker shades for text on light and lighter ones on dark. The fader groups are not colour-coded, and the only accent is the CMS logo blue the theme uses (the knob's grip line, the header rule).
 * The footer says this is not an official University of Cambridge page, as the theme asks of sites that aren't.
 
 ## Where the paper left a choice open

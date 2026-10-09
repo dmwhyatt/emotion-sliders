@@ -16,7 +16,7 @@ test('index.html loads only local files (links in the footer are plain <a href>)
 });
 
 test('stylesheets and scripts make no requests to other origins', () => {
-  const files = ['css/style.css', 'css/fonts.css', 'css/vendor/cambridge-tokens.css',
+  const files = ['css/style.css', 'css/fonts.css', 'css/vendor/cambridge-tokens.css', 'js/vendor/cambridge-theme.js',
     ...readdirSync(new URL('../js/', import.meta.url)).filter((f) => f.endsWith('.js')).map((f) => `js/${f}`)];
   for (const f of files) {
     const text = read(f);
