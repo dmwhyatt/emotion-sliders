@@ -13,13 +13,31 @@
   --emo-neutral: var(--cam-muted); --emo-neutral-ink: var(--cam-muted);
 }
 
+/* Dark mode: the theme re-declares its tokens under these two selectors (the OS setting, and an explicit data-theme), so the
+   emotion colours do the same.  On the dark surfaces the plain palette colours are used as text too, lightened where they would
+   fall under 4.5:1 (the theme's own dark chart colours for Tango and Purple Heart; Purple Heart a step lighter still). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --emo-happy: #f08a4b;    --emo-happy-ink: #f08a4b;
+    --emo-scary: #c58be4;    --emo-scary-ink: #c58be4;
+    --emo-peaceful: #6bbd2e; --emo-peaceful-ink: #6bbd2e;
+    --emo-sad: #4aa3ef;      --emo-sad-ink: #4aa3ef;
+  }
+}
+:root[data-theme="dark"] {
+  --emo-happy: #f08a4b;    --emo-happy-ink: #f08a4b;
+  --emo-scary: #c58be4;    --emo-scary-ink: #c58be4;
+  --emo-peaceful: #6bbd2e; --emo-peaceful-ink: #6bbd2e;
+  --emo-sad: #4aa3ef;      --emo-sad-ink: #4aa3ef;
+}
+
 html, body { height: 100%; }
 p { margin: 0 0 .8em; }
 .small { font-size: 13px; }
 [hidden] { display: none !important; }
 
 /* ---------- buttons: the theme's pill buttons, in the sizes this app needs ---------- */
-.cam-btn-sm { padding: .4rem 1.05rem; font-size: .88rem; }
+.btn-sm { padding: .4rem 1.05rem; font-size: .88rem; }
 .cam-btn.big { padding: .75rem 2rem; font-size: 1rem; }
 .cam-btn:active { transform: translateY(1px); }
 .cam-btn-outline.danger { color: var(--cam-danger); border-color: var(--cam-danger); }
@@ -109,7 +127,7 @@ input[type=checkbox], input[type=range] { accent-color: var(--cam-ink); }
 .strip { flex: 1 1 128px; min-width: 124px; max-width: 178px; display: flex; flex-direction: column; align-items: center; padding: 4px 4px 2px; border-radius: var(--cam-radius-md); }
 .strip:hover, .strip:focus-within { background: var(--cam-fill); }
 .strip-title { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-.badge { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--cam-ink); color: #fff; font-size: 12px; font-weight: 700; }
+.badge { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--cam-ink); color: var(--cam-on-ink); font-size: 12px; font-weight: 700; }
 .strip .name { font-weight: 700; font-size: 14px; white-space: nowrap; }
 .end { text-align: center; line-height: 1.15; height: 34px; display: flex; flex-direction: column; justify-content: center; }
 .end b { font-size: 10.5px; letter-spacing: .03em; white-space: nowrap; }
@@ -122,10 +140,10 @@ input[type=checkbox], input[type=range] { accent-color: var(--cam-ink); }
 .slot { --rx: 36%; position: absolute; left: 0; right: 0; top: 18px; bottom: 18px; }
 .rail { position: absolute; left: var(--rx); top: -6px; bottom: -6px; width: 10px; margin-left: -5px; background: var(--cam-fill); border: 1px solid var(--cam-line-strong); border-radius: 5px; }
 .fill { position: absolute; left: var(--rx); width: 6px; margin-left: -3px; bottom: -4px; background: var(--cam-ink); opacity: .55; border-radius: 3px; }
-/* the knob is flat (the theme has no elevation but a modal's); its grip line is the theme's one teal accent */
+/* the knob is flat (the theme has no elevation but a modal's); its grip line is the theme's one accent */
 .knob { position: absolute; left: var(--rx); width: 42px; height: 28px; margin-left: -21px; transform: translateY(50%);
   background: var(--cam-surface); border: 1.5px solid var(--cam-ink); border-radius: var(--cam-radius-md); display: grid; place-items: center; }
-.knob i { display: block; width: 70%; height: 3px; border-radius: 2px; background: var(--cam-teal); }
+.knob i { display: block; width: 70%; height: 3px; border-radius: 2px; background: var(--cam-accent); }
 .track.dragging .knob { box-shadow: 0 0 0 3px var(--cam-fill), 0 0 0 4.5px var(--cam-ink); }
 .ticks { position: absolute; inset: 0; pointer-events: none; }
 .tick { position: absolute; left: 0; right: 0; height: 0; }

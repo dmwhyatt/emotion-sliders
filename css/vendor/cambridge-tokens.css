@@ -1,25 +1,31 @@
 /*!
- * cms-web-theme — framework-agnostic build. No Bootstrap, no build step:
- * link this file and use the .cam-* classes below. Already on Bootstrap?
- * Use dist/cambridge-theme.css instead (same tokens, Bootstrap's classes).
+ * cms-web-theme — framework-agnostic build: link this file, use the .cam-*
+ * classes. On Bootstrap, use dist/cambridge-theme.css instead.
  *
- * Two headers ship: .cam-header (one row — an app/tool's nav chrome) and
- * .cam-masthead + .cam-hero (identity band, then title band — a content
- * or marketing page). Pick one per page. See README.md / style-guide.html.
+ * Two headers: .cam-header (one row, for an app or tool) and .cam-masthead +
+ * .cam-hero (identity band, then title band, for a content page). One per page.
+ *
+ * Dark mode follows the OS; <html data-theme="light|dark"> overrides it.
+ * js/cambridge-theme.js is the optional toggle that sets it.
  */
 
 :root {
+  /* Lets the browser theme its own UI (form controls, scrollbars). The dark
+     blocks flip it. */
+  color-scheme: light;
   /* --- GENERATED TOKENS: start (see tokens/tokens.json) --- */
   --cam-ink: #133844;
   --cam-ink-deep: #0c262e;
+  --cam-on-ink: #ffffff;
   --cam-muted: #526b77;
   --cam-bg: #f7f8f9;
   --cam-surface: #ffffff;
   --cam-line: #dfe4e7;
   --cam-line-strong: #bcc7cc;
   --cam-fill: #eef1f3;
-  --cam-teal: #00bdb6;
-  --cam-teal-ink: #00666b;
+  --cam-accent: #72adde;
+  --cam-accent-ink: #215a8c;
+  --cam-deep: #133844;
   --cam-danger: #d6083b;
   --cam-focus: #133844;
   --cam-overlay: rgba(19, 56, 68, 0.24);
@@ -38,8 +44,60 @@
   --cam-radius-sm: 3px;
   --cam-radius-md: 4px;
   --cam-radius-pill: 999px;
+  --cam-teal: var(--cam-accent); /* deprecated */
+  --cam-teal-ink: var(--cam-accent-ink); /* deprecated */
   /* --- GENERATED TOKENS: end --- */
 }
+
+/* Dark values: the tokens with a "dark" entry in tokens.json. Declared twice;
+   see scripts/build-tokens.js for why. */
+/* --- GENERATED DARK TOKENS: start (see tokens/tokens.json) --- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --cam-ink: #e6eef1;
+    --cam-ink-deep: #ffffff;
+    --cam-on-ink: #0b1a1f;
+    --cam-muted: #9fb4be;
+    --cam-bg: #0b1a1f;
+    --cam-surface: #112830;
+    --cam-line: #2a4753;
+    --cam-line-strong: #55737f;
+    --cam-fill: #183440;
+    --cam-accent-ink: #9cc7ea;
+    --cam-deep: #1a4656;
+    --cam-focus: #e6eef1;
+    --cam-overlay: rgba(3, 12, 15, 0.55);
+    --cam-shadow-modal: 0 22px 54px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+    --cam-chart-anon: #4aa3ef;
+    --cam-chart-github: #f08a4b;
+    --cam-chart-compute: #b86fdc;
+    --cam-chart-empty: #2b4854;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --cam-ink: #e6eef1;
+  --cam-ink-deep: #ffffff;
+  --cam-on-ink: #0b1a1f;
+  --cam-muted: #9fb4be;
+  --cam-bg: #0b1a1f;
+  --cam-surface: #112830;
+  --cam-line: #2a4753;
+  --cam-line-strong: #55737f;
+  --cam-fill: #183440;
+  --cam-accent-ink: #9cc7ea;
+  --cam-deep: #1a4656;
+  --cam-focus: #e6eef1;
+  --cam-overlay: rgba(3, 12, 15, 0.55);
+  --cam-shadow-modal: 0 22px 54px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --cam-chart-anon: #4aa3ef;
+  --cam-chart-github: #f08a4b;
+  --cam-chart-compute: #b86fdc;
+  --cam-chart-empty: #2b4854;
+}
+/* --- GENERATED DARK TOKENS: end --- */
 
 /* ---------------------------------------------------------------------
    Base
@@ -47,25 +105,17 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-/* Every centred container in this file uses one formula:
-     width: min(<a width token>, calc(100% - 2 * var(--cam-gutter)));
-     margin-inline: auto;
-   width:min() rather than max-width+padding because with border-box the
-   padding would eat into the content area at the clamp point, so two
-   containers with the same max-width but different padding end up
-   different widths — header and masthead visibly failing to line up.
-   Bands that wrap an -inner (.cam-footer) therefore take vertical
-   padding only; the gutter belongs to the container, once. */
+/* Every centred container: width: min(<width token>, calc(100% - 2 * var(--cam-gutter)));
+   margin-inline: auto. min() rather than max-width + padding: with border-box,
+   padding eats into the content at the clamp, so equal max-widths come out
+   unequal. Bands wrapping an -inner (.cam-footer) take vertical padding only. */
 
-/* Author rules with equal-or-higher specificity than the UA stylesheet's
-   [hidden] can win and make a hidden element visible again — .cam-btn's
-   `display: inline-block` on a hidden <a class="cam-btn"> is a real case
-   of this, not a hypothetical. !important settles it regardless of what
-   else targets the element. */
+/* Wins over the UA's [hidden] rule against author display values (e.g.
+   .cam-btn's inline-block on a hidden <a>). */
 [hidden] { display: none !important; }
 
-/* Bare <button>: clickable even unstyled — a toolbar toggle or a chip's
-   remove control usually wants its own colour, not .cam-btn's pill. */
+/* A bare <button> stays clickable but unstyled; a toolbar toggle usually wants
+   its own colour, not .cam-btn's pill. */
 button { font: inherit; cursor: pointer; }
 
 html, body {
@@ -88,10 +138,8 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--cam-ink);
 }
 
-/* margin: 0 above matters, not just tidy: the UA default is em-relative
-   to the heading's own font-size, so overriding h1's size without
-   resetting margin inherits ~21px (0.67em of 2rem) the browser default
-   was never meant to pair with. */
+/* margin: 0 matters: the UA default is em-relative to the heading's own size,
+   so resizing h1 alone inherits ~21px. */
 h1 { font-size: 2rem; letter-spacing: -0.015em; line-height: 1.15; }
 h2 { font-size: 1.35rem; margin-top: 2rem; margin-bottom: 0; }
 h3 { font-size: 1.1rem; }
@@ -102,10 +150,9 @@ a {
   text-underline-offset: 0.18em;
 }
 
-a:hover { color: var(--cam-teal-ink); }
+a:hover { color: var(--cam-accent-ink); }
 
-/* An italic serif wordmark — for your own product/site name, not
-   general emphasis. */
+/* Italic serif wordmark, for your own product/site name. */
 .cam-brand {
   font-family: var(--cam-font-serif);
   font-style: italic;
@@ -113,14 +160,13 @@ a:hover { color: var(--cam-teal-ink); }
 }
 
 /* ---------------------------------------------------------------------
-   .cam-header — one row: wordmark, nav links, right-aligned actions,
-   separated from the body by one accent rule. For an app or tool; see
-   "Masthead + hero" below for the content-page alternative.
+   .cam-header — one row: wordmark, nav, right-aligned actions, under one
+   accent rule. For an app or tool.
    ------------------------------------------------------------------- */
 
 .cam-header {
   background: var(--cam-surface);
-  border-bottom: 3px solid var(--cam-teal);
+  border-bottom: 3px solid var(--cam-accent);
 }
 
 .cam-header-inner {
@@ -133,9 +179,8 @@ a:hover { color: var(--cam-teal-ink); }
   gap: 0.15rem 1.35rem;
 }
 
-/* No font-style here on purpose: italic comes from the wordmark's own
-   .cam-brand markup. Setting it here too subtly changes Chromium's flex
-   sizing for this item even though the rendered glyphs don't change. */
+/* No font-style here: the italic comes from the .cam-brand markup. Setting it
+   here too changes Chromium's flex sizing of this item. */
 .cam-brand-link {
   margin-right: 1.1rem;
   font-family: var(--cam-font-serif);
@@ -143,9 +188,8 @@ a:hover { color: var(--cam-teal-ink); }
   font-weight: 600;
   color: var(--cam-ink);
   text-decoration: none;
-  /* Matches .cam-nav-link's padding/border-bottom on purpose — a
-     transparent border still takes up box height, and it sets the
-     header row's actual height. */
+  /* Matches .cam-nav-link's padding and border: a transparent border still
+     takes height, and it sets the row's height. */
   padding: 0.15rem 0;
   border-bottom: 2px solid transparent;
 }
@@ -167,8 +211,8 @@ a:hover { color: var(--cam-teal-ink); }
 }
 
 .cam-nav-link:hover {
-  color: var(--cam-teal-ink);
-  border-bottom-color: var(--cam-teal);
+  color: var(--cam-accent-ink);
+  border-bottom-color: var(--cam-accent);
 }
 
 .cam-nav-link.is-current {
@@ -179,8 +223,8 @@ a:hover { color: var(--cam-teal-ink); }
 .cam-nav-gap { flex: 1; }
 
 /* ---------------------------------------------------------------------
-   .cam-masthead + .cam-hero — the content-page header: an identity band,
-   then a title band. Costs more space than .cam-header on purpose.
+   .cam-masthead + .cam-hero — content-page header: identity band, then title
+   band. Costs more space than .cam-header, on purpose.
    ------------------------------------------------------------------- */
 
 .cam-masthead {
@@ -196,6 +240,8 @@ a:hover { color: var(--cam-teal-ink); }
   gap: 0.9rem;
 }
 
+.cam-masthead-inner .cam-theme-toggle { margin-left: auto; }
+
 .cam-masthead-id {
   font-family: var(--cam-font-serif);
   font-size: 1.25rem;
@@ -204,7 +250,7 @@ a:hover { color: var(--cam-teal-ink); }
   color: var(--cam-ink);
   text-decoration: none;
   padding-bottom: 0.22rem;
-  border-bottom: 3px solid var(--cam-teal);
+  border-bottom: 3px solid var(--cam-accent);
 }
 
 .cam-masthead-id:hover { color: var(--cam-ink); }
@@ -239,11 +285,11 @@ a:hover { color: var(--cam-teal-ink); }
   color: var(--cam-muted);
 }
 
-/* Deep variant: Pantone 547 full-bleed, as the Cavendish's own homepage
-   uses it. Once per site, on the homepage — every page doing it reads
-   as decoration. */
+/* Pantone 547 full-bleed, as on the Cavendish's homepage. Once per site, on
+   the homepage. --cam-deep, not --cam-ink: ink goes pale in dark mode; the
+   text stays white in both. */
 .cam-hero-deep {
-  background: var(--cam-ink);
+  background: var(--cam-deep);
   color: #fff;
 }
 
@@ -264,14 +310,14 @@ a:hover { color: var(--cam-teal-ink); }
   font-weight: 600;
   text-decoration: none;
   background: var(--cam-ink);
-  color: #fff;
+  color: var(--cam-on-ink);
   border: 0;
   border-radius: var(--cam-radius-pill);
   padding: 0.62rem 1.5rem;
   cursor: pointer;
 }
 
-.cam-btn:hover { background: var(--cam-ink-deep); color: #fff; }
+.cam-btn:hover { background: var(--cam-ink-deep); color: var(--cam-on-ink); }
 .cam-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .cam-btn-outline {
@@ -287,14 +333,65 @@ a:hover { color: var(--cam-teal-ink); }
 }
 
 /* ---------------------------------------------------------------------
-   Notices — a quiet inline banner. Neutral fill, one coloured edge —
-   deliberately low-contrast for a status line, not a warning.
+   Theme toggle — one icon button, wired by js/cambridge-theme.js, which keeps
+   aria-pressed true while dark and un-hides it (it ships `hidden`, so without
+   JS there is no dead control). The icon shows the next state: moon on a
+   light page, sun on a dark one.
+
+     <button type="button" class="cam-theme-toggle" data-cam-theme-toggle
+             aria-label="Dark mode" aria-pressed="false" hidden>
+       <svg class="cam-only-light" viewBox="0 0 16 16" aria-hidden="true" focusable="false">…moon…</svg>
+       <svg class="cam-only-dark" viewBox="0 0 16 16" aria-hidden="true" focusable="false">…sun…</svg>
+     </button>
+
+   A constant label plus aria-pressed, not a label that also changes, which
+   would be announced twice.
+   ------------------------------------------------------------------- */
+
+.cam-theme-toggle {
+  appearance: none;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  /* Pulled out of the row so the hit area doesn't make .cam-header taller
+     (as .cam-modal-close does). */
+  margin-block: -0.4rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: var(--cam-radius-pill);
+  color: var(--cam-ink);
+}
+
+.cam-theme-toggle:hover { background: var(--cam-fill); }
+
+.cam-theme-toggle:focus-visible {
+  outline: 2px solid var(--cam-focus);
+  outline-offset: 2px;
+}
+
+.cam-theme-toggle svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------------------------------------------------------------------
+   Notices — a quiet inline banner: neutral fill, one coloured edge.
+   Low-contrast on purpose; a status line, not a warning.
    ------------------------------------------------------------------- */
 
 .cam-notice {
   padding: 0.6rem 0.85rem;
   background: var(--cam-fill);
-  border-left: 3px solid var(--cam-teal-ink);
+  border-left: 3px solid var(--cam-accent-ink);
   font-size: 0.88rem;
 }
 
@@ -315,15 +412,12 @@ a:hover { color: var(--cam-teal-ink); }
 
 /* ---------------------------------------------------------------------
    Modal — one panel over a blurred page: a welcome box, a first-run
-   explainer, a short confirm. The page stays visible and out of focus
-   behind it, so the box reads as sitting on top of this page rather
-   than as a page of its own.
+   explainer, a short confirm. The page stays visible behind it, out of
+   focus, so the box sits on this page rather than being a page of its own.
 
-   Built on <dialog> + dialog.showModal(), which is what makes it cheap
-   to use correctly: the browser puts the box in the top layer (no
-   z-index to lose), traps focus, makes the rest of the page inert,
-   closes on Escape, and gives us ::backdrop to blur through. A
-   div-and-z-index overlay has to reimplement all five by hand.
+   Built on <dialog> + showModal(): the browser supplies the top layer,
+   focus trap, inert page, Escape and ::backdrop (which carries the blur).
+   A div-and-z-index overlay has to rebuild all five.
 
      <dialog class="cam-modal" aria-labelledby="welcome-title">
        <div class="cam-modal-head">
@@ -346,52 +440,40 @@ a:hover { color: var(--cam-teal-ink); }
        </div>
      </dialog>
 
-   Open it with el.showModal(), not el.show() — show() opens it without
-   the backdrop, the focus trap or the inert page, so the blur silently
-   never appears. .cam-modal-close and .cam-btn above are plain buttons;
-   wire either to el.close(). The autofocus on the primary button is
-   deliberate: without it showModal() focuses the first tabbable thing
-   in the box, which is the close X, so the modal opens with a focus
-   ring on "dismiss" and the action it exists to offer unringed.
+   Open with el.showModal(), not el.show(), which skips the backdrop, focus
+   trap and inert page. Wire .cam-modal-close and the primary button to
+   el.close(). autofocus on the primary button is deliberate: otherwise
+   showModal() focuses the first tabbable element, the close X.
 
-   No <dialog> (or the box is part of the page's own flow, e.g. a
-   server-rendered first-run screen): wrap a plain element in
-   .cam-modal-backdrop instead, which paints the same tint and blur,
-   and give that element role="dialog" and aria-modal="true" yourself.
-   The keyboard behaviour is then yours to write.
+   Without <dialog> (e.g. a server-rendered first-run screen): wrap a plain
+   element in .cam-modal-backdrop, which paints the same tint and blur, and
+   give it role="dialog" and aria-modal="true". Keyboard handling is then
+   yours.
 
-   The steps list is optional — a modal is just as often a kicker, a
-   title, a paragraph and one button. What a modal is NOT is a place to
-   put a form, a settings panel or a second level of navigation: it
-   interrupts, so it has to be worth the interruption and short enough
-   to read standing up.
+   The steps list is optional. A modal is not for a form, a settings panel
+   or navigation: it interrupts, so keep it short enough to read standing up.
    ------------------------------------------------------------------- */
 
 .cam-modal {
   width: min(30rem, calc(100% - 2 * var(--cam-gutter)));
   max-height: calc(100vh - 4rem);
   overflow: auto;
-  /* margin:auto centres it against the UA's `position:fixed; inset:0`
-     on an open modal dialog; harmless in the .cam-modal-backdrop case,
-     where the wrapper's grid does the centring. */
+  /* margin:auto centres it in the UA's fixed, inset:0 box for an open dialog;
+     harmless inside .cam-modal-backdrop, whose grid centres it. */
   margin: auto;
   padding: 2rem 2.25rem 1.75rem;
   background: var(--cam-surface);
   color: var(--cam-ink);
-  /* One teal edge, the same 3px rule .cam-header and .cam-masthead-id
-     carry — it's what marks the box as ours rather than as a generic
-     modal, and it costs no colour anywhere else in the panel. */
+  /* The same 3px accent rule as .cam-header and .cam-masthead-id: what marks
+     the box as ours, at no colour cost elsewhere. */
   border: 1px solid var(--cam-line);
-  border-top: 3px solid var(--cam-teal);
+  border-top: 3px solid var(--cam-accent);
   border-radius: var(--cam-radius-md);
   box-shadow: var(--cam-shadow-modal);
 }
 
-/* var(…, <literal>) on purpose: ::backdrop inherited from nothing at
-   all until 2023, so on an older engine the custom property simply
-   isn't there and the literal is what paints. On a current one the
-   property inherits from :root and stays overridable. Keep the two in
-   step with --cam-overlay / --cam-overlay-blur in tokens.json. */
+/* var() with a literal fallback: ::backdrop didn't inherit custom properties
+   before 2023. Keep in step with --cam-overlay / --cam-overlay-blur in tokens.json. */
 .cam-modal::backdrop {
   background: var(--cam-overlay, rgba(19, 56, 68, 0.24));
   backdrop-filter: blur(var(--cam-overlay-blur, 6px));
@@ -417,9 +499,8 @@ a:hover { color: var(--cam-teal-ink); }
   gap: 1rem;
 }
 
-/* Wider tracking than .cam-table th's 0.03em: that one heads a column
-   of repeated labels, this is a single word on its own above a serif
-   line and needs the extra air to read as a label at all. */
+/* Wider tracking than .cam-table th: a lone word above a serif line needs
+   the air to read as a label. */
 .cam-modal-kicker {
   margin: 0 0 0.4rem;
   font-size: 0.75rem;
@@ -429,9 +510,8 @@ a:hover { color: var(--cam-teal-ink); }
   letter-spacing: 0.06em;
 }
 
-/* An explicit class, not a bare h2: an app that restyles h2 for its own
-   purposes (mf-service turns it into a small sans kicker) would
-   otherwise flatten the modal's title without touching this file. */
+/* A class, not a bare h2, so an app restyling h2 (mf-service makes it a small
+   sans kicker) doesn't flatten it. */
 .cam-modal-title {
   margin: 0;
   font-family: var(--cam-font-serif);
@@ -442,10 +522,9 @@ a:hover { color: var(--cam-teal-ink); }
   color: var(--cam-ink);
 }
 
-/* 2.75rem = the 44px pointer target, then pulled back out of the
-   padding by the negative margins so the glyph still lines up with the
-   box's top-right corner rather than sitting a finger's width inside
-   it. Shrinking the button instead is the usual way this gets broken. */
+/* 2.75rem = a 44px target, pulled back out of the padding by negative margins
+   so the glyph stays on the corner. Shrinking the button instead is the usual
+   way this breaks. */
 .cam-modal-close {
   flex: none;
   width: 2.75rem;
@@ -511,7 +590,7 @@ a:hover { color: var(--cam-teal-ink); }
   border-radius: var(--cam-radius-sm);
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--cam-teal-ink);
+  color: var(--cam-accent-ink);
 }
 
 .cam-modal-actions {
@@ -532,9 +611,8 @@ a:hover { color: var(--cam-teal-ink); }
   cursor: pointer;
 }
 
-/* The theme has no checkbox component, and the browser default sits
-   badly beside a pill button; this styles only the one inside a modal's
-   opt-out. Lift it out if a .cam-check ever lands. */
+/* No checkbox component exists and the browser default clashes with a pill
+   button; this styles only the modal's opt-out. Lift it out if a .cam-check lands. */
 .cam-modal-opt input[type="checkbox"] {
   -webkit-appearance: none;
   appearance: none;
@@ -557,15 +635,23 @@ a:hover { color: var(--cam-teal-ink); }
   background-repeat: no-repeat;
 }
 
+/* The tick is a data-URI image, so its colour is baked in: white on the navy
+   fill, dark on the pale one in dark mode. Selected as in the token blocks. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .cam-modal-opt input[type="checkbox"]:checked {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%230b1a1f' stroke-width='2' d='M3.5 8.5 6.5 11.5 12.5 4.5'/></svg>");
+  }
+}
+:root[data-theme="dark"] .cam-modal-opt input[type="checkbox"]:checked {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%230b1a1f' stroke-width='2' d='M3.5 8.5 6.5 11.5 12.5 4.5'/></svg>");
+}
+
 .cam-modal-opt input[type="checkbox"]:focus-visible {
   outline: 2px solid var(--cam-focus);
   outline-offset: 2px;
 }
 
-/* The first media query in this file, and it earns its place: at phone
-   width the two halves of .cam-modal-actions can't sit side by side
-   without the button shrinking below a comfortable target, so they
-   stack and the button takes the full measure. */
+/* At phone width the actions stack so the button keeps a comfortable target. */
 @media (max-width: 30rem) {
   .cam-modal { padding: 1.5rem 1.4rem 1.4rem; }
   .cam-modal-title { font-size: 1.35rem; }
@@ -602,6 +688,12 @@ a:hover { color: var(--cam-teal-ink); }
   background-repeat: no-repeat;
   background-position: right 0.7rem center;
 }
+
+/* Baked-in stroke again: the chevron needs a pale twin in dark mode. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .cam-select { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path fill='none' stroke='%23e6eef1' stroke-width='1.4' d='M1 1.5 6 6.5 11 1.5'/></svg>"); }
+}
+:root[data-theme="dark"] .cam-select { background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path fill='none' stroke='%23e6eef1' stroke-width='1.4' d='M1 1.5 6 6.5 11 1.5'/></svg>"); }
 
 .cam-input:hover,
 .cam-select:hover { border-color: var(--cam-line-strong); }
@@ -640,9 +732,9 @@ a:hover { color: var(--cam-teal-ink); }
 }
 
 /* ---------------------------------------------------------------------
-   Badges — for data that needs colour to carry meaning (a status, a
-   tag), the one place this theme uses the full primary palette. Each
-   is a WCAG-AA-safe shade — see README.md before adding another.
+   Badges — for data where colour carries meaning (a status, a tag): the one
+   place the full primary palette appears. Each shade clears AA; see README.md
+   before adding one.
    ------------------------------------------------------------------- */
 
 .cam-badge {
@@ -665,6 +757,24 @@ a:hover { color: var(--cam-teal-ink); }
    ------------------------------------------------------------------- */
 
 .cam-muted { color: var(--cam-muted); }
+
+/* One element per mode, for what a token can't recolour (a logo with a black
+   path; see assets/cms-mark-dark.svg). Put .cam-only-light on one and
+   -dark on the other. The hidden one is display:none, so only one alt text
+   is read. */
+:root[data-theme="light"] .cam-only-dark,
+:root[data-theme="dark"] .cam-only-light { display: none; }
+
+/* Dark and light mean what they do in the token blocks: an explicit
+   data-theme wins, else the OS. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .cam-only-light { display: none; }
+}
+
+@media not (prefers-color-scheme: dark) {
+  :root:not([data-theme="dark"]) .cam-only-dark { display: none; }
+}
+
 .cam-container {
   width: min(var(--cam-width-text), calc(100% - 2 * var(--cam-gutter)));
   margin-inline: auto;
@@ -676,12 +786,11 @@ a:hover { color: var(--cam-teal-ink); }
 }
 
 /* ---------------------------------------------------------------------
-   Prose — long-form content. Apply to a wrapping element; it styles its
-   own children rather than requiring a class on each one.
+   Prose — long-form content. Apply to a wrapper; it styles its children.
    ------------------------------------------------------------------- */
 
-/* max-width, not the container formula: prose is a reading measure inside
-   a container that already carries the gutter, and stays left-aligned. */
+/* max-width, not the container formula: a reading measure inside a container
+   that already has the gutter. */
 .cam-prose {
   max-width: var(--cam-width-text);
   font-size: 1.02rem;
@@ -707,7 +816,7 @@ a:hover { color: var(--cam-teal-ink); }
 .cam-prose blockquote {
   margin: 1.4em 0;
   padding: 0.2em 0 0.2em 1.1em;
-  border-left: 3px solid var(--cam-teal);
+  border-left: 3px solid var(--cam-accent);
   color: var(--cam-muted);
   font-style: italic;
 }
@@ -724,8 +833,8 @@ a:hover { color: var(--cam-teal-ink); }
 .cam-prose video { border-radius: var(--cam-radius-md); }
 
 /* ---------------------------------------------------------------------
-   Footer — a full closing band for a content page. An app's own footer
-   is usually just a <footer> with your own spacing (see the examples).
+   Footer — a closing band for a content page. An app's footer is usually a
+   plain <footer>.
    ------------------------------------------------------------------- */
 
 .cam-footer {
@@ -746,4 +855,4 @@ a:hover { color: var(--cam-teal-ink); }
 }
 
 .cam-footer a { color: var(--cam-muted); }
-.cam-footer a:hover { color: var(--cam-teal-ink); }
+.cam-footer a:hover { color: var(--cam-accent-ink); }
