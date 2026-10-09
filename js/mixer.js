@@ -96,8 +96,11 @@ export class Mixer {
     this.bindPointer(p, track);
     this.bindKeys(p, track);
     track.addEventListener('dblclick', () => this.store.setValue(p.id, p.defaultValue, 'user'));
-    for (const ev of ['pointerenter', 'focus']) el.addEventListener(ev, () => this.onHelp(p), true);
-    for (const ev of ['pointerleave', 'blur']) el.addEventListener(ev, () => this.onHelp(null), true);
+    // Not capturing listeners: those would also fire whenever the pointer crosses from one child of the strip
+    // (track, knob, readout ...) to another, and the help text would flicker between this fader and the default.
+    // focus/blur do not bubble, hence focusin/focusout.
+    for (const ev of ['pointerenter', 'focusin']) el.addEventListener(ev, () => this.onHelp(p));
+    for (const ev of ['pointerleave', 'focusout']) el.addEventListener(ev, () => this.onHelp(null));
     return el;
   }
 
