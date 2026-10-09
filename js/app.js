@@ -83,7 +83,7 @@ function buildHelp() {
     helpEls.set(key, msg);
   };
   PARAMS.forEach((p, i) => add(p, `${i + 1} · ${p.name}`, p.help));
-  add(null, 'Seven faders, seven musical variables', 'Drag a fader — the music changes as you move it. Hover over a fader to read what it does. Double-click a fader to reset it.');
+  add(null, 'Seven faders, seven musical variables', 'Drag a fader — the music changes as you move it. Hover over a fader to read what it does. The bold mark on each scale is where the fader starts; double-click a fader to put it back there.');
   showHelp(null);
 }
 
