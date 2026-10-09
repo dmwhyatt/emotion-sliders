@@ -172,6 +172,9 @@ input[type=checkbox], input[type=range] { accent-color: var(--cam-ink); }
 #app[data-phase='trial'][data-blind='true'] .value,
 #app[data-phase='trial'][data-blind='true'] .sub,
 #app[data-phase='trial'][data-blind='true'] .tick span { visibility: hidden; }
+/* ...and no emphasis on the starting-position tick: its bold mark only means something beside its (now hidden) bold label, and on
+   its own it looks like an unexplained notch next to the knob */
+#app[data-phase='trial'][data-blind='true'] .tick.nominal::before { border-top: 1px solid var(--cam-line-strong); width: 10px; }
 
 /* ---------- results ---------- */
 .results-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
